@@ -8,7 +8,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
+
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
     root: {
         maxWidth: 345,
-        margin: 10
+        margin: 20
     },
     media: {
         height: 0,
@@ -63,6 +63,16 @@ export default function TravelRecord() {
             <NavBar />
             <div>
                 <Card className={classes.root}>
+                    <CardHeader
+
+                        action={
+                            <IconButton aria-label="settings">
+                                <MoreVertIcon />
+                            </IconButton>
+                        }
+                        title="Shrimp and Chorizo "
+                        subheader="September 14, 2016"
+                    />
 
                     <CardMedia
                         className={classes.media}

@@ -31,7 +31,7 @@ import { Config } from '../firebase.js';
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
-        width: "100%"
+        // width: "100%"
     },
     title: {
         marginLeft: theme.spacing(2),
@@ -48,9 +48,10 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         padding: 10,
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        alignItems: "center",
+        flexDirection: "column",
+        // flexWrap: 'wrap',
+        // justifyContent: 'space-around',
+        // alignItems: "center",
 
         backgroundColor: theme.palette.background.paper,
     },
@@ -79,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
     grid: {
         flexGrow: 1,
         width: "100%"
+    },
+    center: {
+        margin: "auto"
     }
 }));
 
@@ -137,7 +141,7 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
 
 
         <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}
-            style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", width: "100%" }}
+            style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", }}
         >
             <AppBar className={classes.appBar}>
                 <Toolbar>
@@ -152,42 +156,41 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                 </Toolbar>
             </AppBar>
             <div className={classes.root}>
+                <Box display="flex"  >
+                    <Box p={1} flexGrow={1} className={classes.center}>
+                        <span className="font-link" style={{
+                            fontSize: 17,
+                        }} >
+                            共 {imagePrev.length} 張
+                        </span>
+                    </Box>
+
+                    <Box  >
+                        <input type="file" accept="image/x-png,image/jpeg" onChange={handleUpload}
+                            id="file"
+                            style={{
+                                display: "none"
+                                // visibility: "hidden",
+                                // width: 0,
+                                // height: 0
+                            }}
+                            multiple
+                            capture
+                        />
+                        <IconButton >
+                            <label htmlFor="file" >
+                                <AddPhotoAlternateIcon />
+                            </label>
+                        </IconButton>
+                    </Box>
+                </Box>
+
                 <ImageList rowHeight={180} className={classes.imageList}>
-                    <ImageListItem key="Subheader" cols={1.6} style={{ height: 'auto' }}>
-                        <div className={classes.grid}>
-                            <Grid container spacing={3}>
-                                <Grid item xs={5} sm={3}>
-                                    <ListSubheader component="div"> <span className="font-link" style={{ fontSize: 17, }}>
-                                        共 {imagePrev.length} 張
-                                    </span></ListSubheader>
-                                </Grid>
 
-
-                                <Grid item xs={1} sm={3}>
-                                    <input type="file" accept="image/x-png,image/jpeg" onChange={handleUpload}
-                                        id="file"
-                                        style={{
-                                            display: "none"
-                                            // visibility: "hidden",
-                                            // width: 0,
-                                            // height: 0
-                                        }}
-                                        multiple
-                                        capture
-                                    />
-                                    <IconButton >
-                                        <label htmlFor="file" >
-                                            <AddPhotoAlternateIcon />
-                                        </label>
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        </div>
-                    </ImageListItem>
                     {imagePrev.map((photo, index) => (
                         <ImageListItem key={photo.imgPath} >
 
-                            <img src={photo.imgPath} />
+                            <img src={photo.imgPath} height="150" />
                             <ImageListItemBar
 
                                 position="top"
