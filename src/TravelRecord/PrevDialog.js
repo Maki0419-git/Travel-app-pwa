@@ -166,7 +166,12 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                                 <Grid item xs={1} sm={3}>
                                     <input type="file" accept="image/x-png,image/jpeg" onChange={handleUpload}
                                         id="file"
-                                        style={{ display: "none" }}
+                                        style={{
+                                            display: "none"
+                                            // visibility: "hidden",
+                                            // width: 0,
+                                            // height: 0
+                                        }}
                                         multiple
                                         capture
                                     />
