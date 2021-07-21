@@ -1,0 +1,17 @@
+.mapContainer {
+    height: 400px;
+    width: 350px;
+    
+    margin: 0px;
+  
+    background-color: aliceblue;
+  }
+  .font-link {
+    font-family: 'Noto Serif TC', serif;
+    /* font-size: larger; */
+  }
+  .vl {
+    border-left: 6px solid #9a0036;
+    height:40px;
+   
+  }
