@@ -168,6 +168,7 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                                         id="file"
                                         style={{ display: "none" }}
                                         multiple
+                                        capture
                                     />
                                     <IconButton >
                                         <label htmlFor="file" >
