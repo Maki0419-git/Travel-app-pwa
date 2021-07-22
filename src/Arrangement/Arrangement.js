@@ -1,11 +1,8 @@
 
-import React from 'react';
-import Paper from '@material-ui/core/Paper';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -16,6 +13,17 @@ import AddIcon from '@material-ui/icons/Add';
 import NavBar from "../NavBar";
 import "../styles.css";
 import AddArrangement from './AddArrangement';
+import ArrangementDetail from "./ArrangementDetail";
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { Config } from '../firebase';
+
+if (!firebase.apps.length) {
+
+    firebase.initializeApp(Config);
+
+}
+let db = firebase.firestore();
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,22 +34,43 @@ const useStyles = makeStyles((theme) => ({
     },
     fab: {
         position: 'fixed',
-        bottom: theme.spacing(15),
-        right: theme.spacing(6),
+        bottom: 25,
+        right: 10,
     },
 }));
 
 export default function Arrangement() {
     const [open, setOpen] = React.useState(false);
+    const [detailOpen, setDetailOpen] = React.useState(false);
+    const [arrangements, setArrangements] = useState([])
     const classes = useStyles();
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);
     };
+
+    async function readData() {
+
+        db.collection("user_info/DlXAEufxhTCF0L2SvK39/arrangements")
+            .onSnapshot((snapshot) => {
+                const data = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    title: doc.data().title,
+                    day: doc.data().day,
+
+                }
+                )
+                );
+                console.log("All Arrangements:", data);
+
+                setArrangements(data)
+
+            })
+
+    }
+
+
+    useEffect(() => { readData() }, [])
 
     return (
         <div style={{ alignItems: "center", flex: 1 }}>
@@ -79,6 +108,9 @@ export default function Arrangement() {
                 </div>
                 <div >
                     <AddArrangement open={open} handleClose={handleClose} />
+                </div>
+                <div>
+                    <ArrangementDetail open={detailOpen} />
                 </div>
             </div>
             <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => setOpen(true)}>

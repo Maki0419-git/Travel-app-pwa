@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,12 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Box from '@material-ui/core/Box';
 import "../styles.css";
-import { ContactsOutlined } from '@material-ui/icons';
 import firebase from "firebase/app";
 
 import "firebase/storage";
@@ -114,7 +111,7 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
             waitEach(imageUpload, async (index, item) => {
                 try {
                     console.log(item);
-                    const imageRef = storage.ref().child("test/" + item.name);
+                    const imageRef = storage.ref().child("ABC/" + item.name);
 
                     await imageRef.put(item);
 
@@ -185,7 +182,7 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                     </Box>
                 </Box>
 
-                <ImageList rowHeight={180} className={classes.imageList}>
+                <ImageList rowHeight={180} className={classes.imageList} >
 
                     {imagePrev.map((photo, index) => (
                         <ImageListItem key={photo.imgPath} >

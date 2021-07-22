@@ -1,15 +1,13 @@
 import NavBar from "../NavBar";
-import React, { useState, useEffect, memo } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import ImageListItemBar from '@material-ui/core/ImageListItemBar';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import { itemData } from '../ImageList';
 import PhotoDetail from "./PhotoDetail";
-import SideBar from "../SideBar";
 const useStyles = makeStyles((theme) => ({
     container: {
 

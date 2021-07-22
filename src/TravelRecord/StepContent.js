@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import ImageListComponent from "../ImageListComponent";
-import TextMobileStepper from "./imageView";
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import PrevDialog from "./PrevDialog"
 import { IconButton } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import { classDeclaration } from '@babel/types';
-
-
 
 const defaultProps = {
     bgcolor: 'background.paper',

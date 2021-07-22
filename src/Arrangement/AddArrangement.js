@@ -3,27 +3,23 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
-import Divider from '@material-ui/core/Divider';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import DialogContent from '@material-ui/core/DialogContent';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import LocalFloristIcon from '@material-ui/icons/LocalFlorist';
-import EditIcon from '@material-ui/icons/Edit';
 import Grid from '@material-ui/core/Grid';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
 import AddIcon from '@material-ui/icons/Add';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
-import DescriptionIcon from '@material-ui/icons/Description';
-import { DatePicker, TimePicker } from "./DateSelection"
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-import dayjs from 'dayjs'
+import { DatePicker } from "./DateSelection"
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { Config } from '../firebase';
+import Fields from "./Fields";
+import dayjs from 'dayjs';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -38,165 +34,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const Alert = ({ error }) => {
-    return (
-        <Snackbar open={error} autoHideDuration={6000} >
-            <MuiAlert severity="error" elevation={6} variant="filled">This is a warning message!</MuiAlert>
-        </Snackbar>
-    )
-}
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-
-
-
-const Fields = ({ data, saveField, deleteField, index }) => {
-
-    const [location, setLoaction] = useState("");
-    const [address, setAddress] = useState("");
-    const [memo, setMemo] = useState("");
-    const [time, setTime] = useState(dayjs());
-    const [isSaved, setIsSaved] = useState(false);
-    const [ifError, setIfError] = useState(false);
-
-    useEffect(() => {
-        setLoaction(data.location)
-        setAddress(data.address)
-        setTime(data.time)
-    }, [data])
-
-    const classes = useStyles();
-
-    return (
-        <div style={{ flexDirection: "column", width: "100%", marginTop: 10 }}>
-            <Grid container >
-                <Grid item xs={10} style={{ paddingTop: 10 }}>
-                    <Typography variant="h6" className={classes.title} color="primary">
-                        <span className="font-link" style={{ fontSize: 20, }}>
-                            第 {index + 1} 站
-                        </span>
-                    </Typography>
-                </Grid>
-                {isSaved &&
-                    <>
-
-                        <Grid item xs={1} sm={4}>
-                            <IconButton
-                                onClick={() => { setIsSaved(false) }}
-                            ><EditIcon /></IconButton>
-                        </Grid>
-                    </>
-                }
-            </Grid>
-
-            <Divider />
-            <form autoComplete="off" onSubmit={(event) => event.preventDefault()} style={{ width: "100%", flexDirection: "column", marginTop: 15 }} >
-                <div style={{ marginTop: 8, marginBottom: 15, }}>
-                    <TextField
-                        required
-                        error={ifError}
-                        label={<span className="font-link" style={{ fontSize: 20 }}>
-                            景點
-                        </span>}
-
-                        value={location || ''}
-                        variant="outlined"
-                        onChange={(event) => setLoaction(event.target.value)}
-
-                        style={{ width: "100%" }}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
-                                <LocalFloristIcon />
-                            </InputAdornment>,
-                            readOnly: isSaved,
-                        }}
-
-
-                    />
-                </div>
-                <div style={{ marginTop: 8, marginBottom: 15, }}>
-                    <TextField
-
-
-                        label={<span className="font-link" style={{ fontSize: 20 }}>
-                            地址
-                        </span>}
-
-                        value={address || ''}
-                        variant="outlined"
-                        onChange={(event) => setAddress(event.target.value)}
-                        style={{ width: "100%" }}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
-                                <LocationOnIcon />
-                            </InputAdornment>,
-                            readOnly: isSaved,
-                        }}
-
-
-                    />
-                </div>
-                <div style={{ marginTop: 8, marginBottom: 15, }}>
-                    <TimePicker time={time} setTime={setTime} isSaved={isSaved} />
-                </div>
-                <div style={{ marginTop: 8, marginBottom: 15, }}>
-                    <TextField
-
-
-                        label={<span className="font-link" style={{ fontSize: 20 }}>
-                            備註
-                        </span>}
-
-                        value={memo || ''}
-                        variant="outlined"
-                        onChange={(event) => setMemo(event.target.value)}
-                        style={{ width: "100%" }}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
-                                <DescriptionIcon />
-                            </InputAdornment>,
-                            readOnly: isSaved,
-                        }}
-                        multiline
-                        rows={3}
-
-
-                    />
-                </div>
-                {isSaved === false &&
-                    <Grid container spacing={3}>
-                        <Grid item xs={6}>
-                            <Button variant="outlined" color="primary"
-                                style={{ marginTop: 10, width: "100%" }}
-                                onClick={() => { deleteField(index) }}
-                            >
-                                刪除
-                            </Button>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Button variant="outlined" color="primary"
-                                style={{ marginTop: 10, width: "100%" }}
-                                onClick={() => {
-                                    if (location === "") {
-                                        setIfError(true)
-                                    } else { saveField(index, location, address, time, memo); setIsSaved(true); setIfError(false) }
-                                }}
-                                type="submit"
-                            >
-                                儲存
-                            </Button>
-                        </Grid>
-                    </Grid>
-
-                }
-                {/* <Alert error={ifError} /> */}
-            </form>
-
-        </div>
-    )
-}
 
 
 export default function AddArrangement({ open, handleClose }) {
@@ -205,17 +46,19 @@ export default function AddArrangement({ open, handleClose }) {
 
         location: "",
         address: "",
-        time: new Date(),
-        memo: ""
+        clock: dayjs(),
+        memo: "",
+        city: ""
 
     }])
-    const [name, setName] = useState("")
-    const [fieldCount, setFieldCount] = useState(1);
+    const [title, setTitle] = useState("")
+    const [day, setDay] = useState(dayjs())
+    const [requiredError, setRequiredError] = useState(false);
     console.log(submit);
 
-    const saveField = (index, location, address, time, memo) => {
+    const saveField = (index, location, address, clock, memo, city) => {
         const copySub = [...submit];
-        copySub[index] = { location: location, address: address, time: time, memo: memo }
+        copySub[index] = { location: location, address: address, clock: clock, memo: memo, city: city }
         setSubmit(copySub);
     }
 
@@ -230,36 +73,108 @@ export default function AddArrangement({ open, handleClose }) {
 
     const addField = () => {
         setSubmit((prev) => ([
-            ...prev, {
-                [(submit.length + 1).toString()]: {
-                    location: "",
-                    address: "",
-                    time: "",
-                    memo: ""
-                }
-            }]))
+            ...prev,
+            {
+                location: "",
+                address: "",
+                clock: dayjs(),
+                memo: "",
+                city: "",
+            }
+        ]))
     }
 
 
     useEffect(() => {
         console.log("open")
+        setTitle("")
+        setRequiredError(false)
+        setDay(dayjs())
         setSubmit([{
 
             location: "",
             address: "",
-            time: new Date(),
-            memo: ""
+            clock: dayjs(),
+            memo: "",
+            city: ""
 
         }])
     }, [open])
 
+    function changeDay(d) {
+        switch (d) {
+            case "0":
+                return "日"
+
+            case "1":
+                return "一"
+
+            case "2":
+                return "二"
+
+            case "3":
+                return "三"
+
+            case "4":
+                return "四"
+
+            case "5":
+                return "五"
+
+            case "6":
+                return "六"
+
+            default:
+
+                return "一"
+
+        }
+    }
+
+    async function saveToDB() {
+        if (title === "") {
+            setRequiredError(true)
+        } else {
+            if (!firebase.apps.length) {
+
+                firebase.initializeApp(Config);
+
+            }
+            let db = firebase.firestore();
+            try {
+                const docRef = await db.collection("user_info/DlXAEufxhTCF0L2SvK39/arrangements").add({
+                    title: title,
+                    day: day.format("M") + "月" + day.format("D") + "日 星期" + changeDay(day.format("d"))
+                });
+                console.log(docRef.id)
+
+                submit.forEach((element, index) => {
+                    db.collection("user_info/DlXAEufxhTCF0L2SvK39/arrangements/" + docRef.id + "/spots").add({
+                        order: index + 1,
+                        location: element.location,
+                        address: element.address,
+                        clock: element.clock.format("HH:mm"),
+                        memo: element.memo,
+                        city: element.city,
+
+                    })
+                });
+            }
+            catch (error) {
+                console.error("Error adding arrangement: ", error);
+            }
+
+            handleClose();
+
+
+
+
+        }
+    }
+    // console.log(day);
     return (
 
         <div>
-            {/* {console.log(submit["1"])}
-            {console.log(submit["2"])}
-
-            {console.log("a:" + arrangements)} */}
             <Dialog fullScreen open={open} TransitionComponent={Transition} >
                 <AppBar className={classes.appBar}>
                     <Toolbar>
@@ -271,12 +186,15 @@ export default function AddArrangement({ open, handleClose }) {
                                 規劃你的行程!
                             </span>
                         </Typography>
-                        <Button autoFocus color="inherit" edge="end" onClick={handleClose}>
-                            完成
+                        <Button autoFocus color="inherit" edge="end" onClick={saveToDB}>
+                            <span className="font-link" style={{ fontSize: 16 }}>
+                                完成
+                            </span>
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <DialogContent style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingLeft: 15 }}>
+                <DialogContent style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+
                     <div style={{ flexDirection: "column", width: "100%", alignItems: "center" }}>
                         <Grid container spacing={2} style={{ marginBottom: 5, marginTop: 5 }} >
                             <Grid item >
@@ -291,14 +209,14 @@ export default function AddArrangement({ open, handleClose }) {
                         </Grid>
                         <TextField
 
-
+                            error={requiredError}
                             label={<span className="font-link" style={{ fontSize: 20 }}>
                                 命名
                             </span>}
-
-                            value={name}
+                            required
+                            value={title}
                             variant="outlined"
-                            onChange={(event) => setName(event.target.value)}
+                            onChange={(event) => setTitle(event.target.value)}
                             style={{ marginTop: 5, marginBottom: 10, width: "100%" }}
                             InputProps={{
                                 endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
@@ -322,7 +240,7 @@ export default function AddArrangement({ open, handleClose }) {
                             </Grid>
 
                         </Grid>
-                        <DatePicker />
+                        <DatePicker setDay={setDay} day={day} />
                     </div>
                     <div style={{ flexDirection: "column", width: "100%" }}>
 
