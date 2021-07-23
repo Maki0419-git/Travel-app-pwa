@@ -91,13 +91,9 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 
-function getSteps() {
-    return [<span className="font-link" style={{ fontSize: 20, fontWeight: 500 }}>
-        台中美術館
-    </span>, 'Create an ad group', 'Create an ad'];
-}
 
-function getStepContent(step) {
+
+function getStepContent(i) {
     return (
         <div style={{ width: '100%', }}>
 
@@ -107,7 +103,7 @@ function getStepContent(step) {
                 </Box>
                 <Box >
                     <span className="font-link" style={{ fontSize: 14, fontWeight: 300 }}>
-                        台中市123256
+                        {i.address}
                     </span>
                 </Box>
 
@@ -118,7 +114,7 @@ function getStepContent(step) {
                 </Box>
                 <Box >
                     <span className="font-link" style={{ fontSize: 14, fontWeight: 300 }}>
-                        12:00
+                        {i.clock.format("HH:mm")}
                     </span>
                 </Box>
 
@@ -133,7 +129,7 @@ function getStepContent(step) {
 
 
 
-                        value={1234567890}
+                        value={i.memo}
                         variant="outlined"
                         style={{ width: "100%" }}
                         InputProps={{
@@ -152,24 +148,10 @@ function getStepContent(step) {
 
         </div>
     )
-    // switch (step) {
-    //     case 0:
-    //         return `For each ad campaign that you create, you can control how much
-    //             you're willing to spend on clicks and conversions, which networks
-    //             and geographical locations you want your ads to show on, and more.`;
-    //     case 1:
-    //         return 'An ad group contains one or more ads which target a shared set of keywords.';
-    //     case 2:
-    //         return `Try out different ad text to see what brings in the most customers,
-    //             and learn how to enhance your ads using features like ad extensions.
-    //             If you run into any problems with your ads, find out how to tell if
-    //             they're running and how to resolve approval issues.`;
-    //     default:
-    //         return 'Unknown step';
-    // }
+
 }
 
-export default function ArrangementDetail({ open, main, selectedID }) {
+export default function ArrangementDetail({ open, main, selectedID, closeDetail }) {
     const classes = useStyles();
     const [activeStep, setActiveStep] = React.useState(0);
     const [mainContent, setMainContent] = useState({
@@ -178,7 +160,7 @@ export default function ArrangementDetail({ open, main, selectedID }) {
     })
     const [detail, setDetail] = useState([]);
 
-    const steps = getSteps();
+
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -194,28 +176,31 @@ export default function ArrangementDetail({ open, main, selectedID }) {
 
     async function readData() {
         try {
-            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels/" + selectedID + "/spots")
-                .onSnapshot((snapshot) => {
-                    const data = snapshot.docs.map((doc) => ({
-                        id: doc.id,
-                        location: doc.data().location,
-                        address: doc.data().address,
-                        clock: doc.data().clock,
-                    }
-                    )
-                    );
-                    console.log("All locations:", data);
+            if (selectedID != "") {
+                db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels/" + selectedID + "/spots")
+                    .onSnapshot((snapshot) => {
+                        const data = snapshot.docs.map((doc) => ({
+                            id: doc.id,
+                            location: doc.data().location,
+                            address: doc.data().address,
+                            clock: dayjs.unix(doc.data().clock),
+                            memo: doc.data().memo
+                        }
+                        )
+                        );
+                        console.log("All locations:", data);
 
-                    setDetail(data);
+                        setDetail(data);
 
-                    // setArrangements(data)
+                        // setArrangements(data)
 
-                })
+                    })
+            }
         } catch (e) { console.log(e) }
     }
 
 
-    useEffect(() => { setMainContent({ title: main.title, day: main.day }); readData() }, [selectedID])
+    useEffect(() => { setMainContent({ title: main.title, day: main.day }); readData() }, [open])
     return (
         <div>
 
@@ -251,11 +236,13 @@ export default function ArrangementDetail({ open, main, selectedID }) {
                 <DialogContent dividers style={{ padding: 10 }}>
                     <div className={classes.steproot}>
                         <Stepper activeStep={activeStep} orientation="vertical">
-                            {steps.map((label, index) => (
-                                <Step key={label}>
-                                    <StepLabel>{label}</StepLabel>
+                            {detail.map((i, index) => (
+                                <Step key={i.id}>
+                                    <StepLabel><span className="font-link" style={{ fontSize: 20, fontWeight: 500 }}>
+                                        {i.location}
+                                    </span></StepLabel>
                                     <StepContent>
-                                        <Typography>{getStepContent(index)}</Typography>
+                                        {getStepContent(i)}
                                         <div className={classes.actionsContainer}>
                                             <div>
                                                 <Button
@@ -271,7 +258,7 @@ export default function ArrangementDetail({ open, main, selectedID }) {
                                                     onClick={handleNext}
                                                     className={classes.button}
                                                 >
-                                                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                                    {activeStep === detail.length - 1 ? 'Finish' : 'Next'}
                                                 </Button>
                                             </div>
                                         </div>
@@ -279,7 +266,7 @@ export default function ArrangementDetail({ open, main, selectedID }) {
                                 </Step>
                             ))}
                         </Stepper>
-                        {activeStep === steps.length && (
+                        {activeStep === detail.length && (
                             <Paper square elevation={0} className={classes.resetContainer}>
                                 <Typography>All steps completed - you&apos;re finished</Typography>
                                 <Button onClick={handleReset} className={classes.button}>
@@ -291,9 +278,9 @@ export default function ArrangementDetail({ open, main, selectedID }) {
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus
-                        //  onClick={handleClose} 
+                        onClick={closeDetail}
                         color="primary">
-                        Save changes
+                        完成
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -5,11 +5,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+
 import NavBar from "../NavBar";
 import "../styles.css";
 import AddArrangement from './AddArrangement';
@@ -74,7 +75,8 @@ export default function Arrangement() {
     const [open, setOpen] = React.useState(false);
     const [detailOpen, setDetailOpen] = React.useState(false);
     const [arrangements, setArrangements] = useState([])
-    const [selectedID, setSelectedID] = useState(false);
+    const [selectedID, setSelectedID] = useState("");
+    const [action, setAction] = useState("add");
     const [main, setMain] = useState({
 
         title: "",
@@ -91,13 +93,16 @@ export default function Arrangement() {
         try {
             db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").where("progress", "==", "arrangement")
                 .onSnapshot((snapshot) => {
-                    const data = snapshot.docs.map((doc) => ({
-                        id: doc.id,
-                        title: doc.data().title,
-                        day: dayjs.unix(doc.data().day),
+                    const data = snapshot.docs.map((doc) => (
+
+                        {
+                            id: doc.id,
+                            title: doc.data().title,
+                            day: dayjs.unix(doc.data().day.seconds),
 
 
-                    }
+
+                        }
                     )
                     );
                     console.log("All Arrangements:", data);
@@ -118,6 +123,25 @@ export default function Arrangement() {
 
         })
 
+    }
+
+    function closeDetail() {
+        setDetailOpen(false)
+        setSelectedID("")
+        setMain({
+            title: "",
+            dsy: ""
+        })
+    }
+
+    function openAdd(action) {
+        if (action === "add") {
+            setAction("add")
+            setOpen(true)
+        } else {
+            setAction("edit")
+            setOpen(true)
+        }
     }
 
     useEffect(() => { readData() }, [])
@@ -152,8 +176,8 @@ export default function Arrangement() {
 
                                 </Grid>
                                 <ListItemSecondaryAction>
-                                    <IconButton edge="end" aria-label="delete">
-                                        <DeleteIcon />
+                                    <IconButton edge="end" aria-label="delete" onClick={() => { openAdd("edit"); setSelectedID(i.id) }} >
+                                        <EditIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>
 
@@ -164,13 +188,13 @@ export default function Arrangement() {
 
                 </div>
                 <div >
-                    <AddArrangement open={open} handleClose={handleClose} />
+                    <AddArrangement open={open} handleClose={handleClose} id={selectedID} action={action} />
                 </div>
                 <div>
-                    <ArrangementDetail open={detailOpen} main={main} selectedID={selectedID} />
+                    <ArrangementDetail open={detailOpen} main={main} selectedID={selectedID} closeDetail={closeDetail} />
                 </div>
             </div>
-            <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => setOpen(true)}>
+            <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => openAdd("add")}>
                 <AddIcon />
             </Fab>
 

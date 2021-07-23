@@ -21,6 +21,13 @@ import { Config } from '../firebase';
 import Fields from "./Fields";
 import dayjs from 'dayjs';
 
+if (!firebase.apps.length) {
+
+    firebase.initializeApp(Config);
+
+}
+let db = firebase.firestore();
+
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
@@ -40,7 +47,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 
-export default function AddArrangement({ open, handleClose }) {
+function AddArrangement({ open, handleClose, id, action }) {
     const classes = useStyles();
     const [submit, setSubmit] = useState([{
 
@@ -85,20 +92,52 @@ export default function AddArrangement({ open, handleClose }) {
     }
 
 
+
+    async function readData() {
+        if (action === "add") {
+            setTitle("")
+            setRequiredError(false)
+            setDay(dayjs())
+            setSubmit([{
+
+                location: "",
+                address: "",
+                clock: dayjs(),
+                memo: "",
+                city: ""
+            }])
+        } else {
+
+            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels/" + id + "/spots")
+                .onSnapshot((snapshot) => {
+                    const data = snapshot.docs.map((doc) => ({
+                        city: doc.data().city,
+                        location: doc.data().location,
+                        address: doc.data().address,
+                        clock: dayjs.unix(doc.data().clock),
+                        memo: doc.data().memo
+                    }
+                    )
+                    );
+                    console.log("All locations:", data);
+                    setSubmit(data);
+
+                })
+            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").doc(id).onSnapshot((snapshot) => {
+                setTitle(snapshot.data().title)
+                console.log(dayjs.unix(snapshot.data().day.seconds))
+                setDay(dayjs.unix(snapshot.data().day.seconds))
+            })
+        }
+    }
+
+
     useEffect(() => {
-        console.log("open")
-        setTitle("")
-        setRequiredError(false)
-        setDay(dayjs())
-        setSubmit([{
+        readData();
+        // console.log("open")
 
-            location: "",
-            address: "",
-            clock: dayjs(),
-            memo: "",
-            city: ""
 
-        }])
+        // }])
     }, [open])
 
 
@@ -107,12 +146,7 @@ export default function AddArrangement({ open, handleClose }) {
         if (title === "") {
             setRequiredError(true)
         } else {
-            if (!firebase.apps.length) {
 
-                firebase.initializeApp(Config);
-
-            }
-            let db = firebase.firestore();
             try {
                 const docRef = await db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").add({
                     title: title,
@@ -126,7 +160,7 @@ export default function AddArrangement({ open, handleClose }) {
                         order: index + 1,
                         location: element.location,
                         address: element.address,
-                        clock: element.clock.format("HH:mm"),
+                        clock: element.clock.toDate(),
                         memo: element.memo,
                         city: element.city,
 
@@ -244,7 +278,7 @@ export default function AddArrangement({ open, handleClose }) {
                     </div>
                     <div style={{ flexDirection: "column", width: "100%", alignItems: "center" }}>
                         {submit.map((i, index) => (
-                            <Fields data={i} saveField={saveField} deleteField={deleteField} key={index} index={index} />
+                            <Fields data={i} saveField={saveField} deleteField={deleteField} key={i.clock} index={index} />
                         ))}
                     </div>
 
@@ -256,3 +290,16 @@ export default function AddArrangement({ open, handleClose }) {
 
     );
 }
+function areEqual(prevProps, nextProps) {
+    if (
+        prevProps.open !== nextProps.open
+    ) {
+        console.log("render");
+        return false;
+    }
+    // console.log(true);
+    return true;
+}
+
+
+export default React.memo(AddArrangement, areEqual)
