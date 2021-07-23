@@ -101,35 +101,7 @@ export default function AddArrangement({ open, handleClose }) {
         }])
     }, [open])
 
-    function changeDay(d) {
-        switch (d) {
-            case "0":
-                return "日"
 
-            case "1":
-                return "一"
-
-            case "2":
-                return "二"
-
-            case "3":
-                return "三"
-
-            case "4":
-                return "四"
-
-            case "5":
-                return "五"
-
-            case "6":
-                return "六"
-
-            default:
-
-                return "一"
-
-        }
-    }
 
     async function saveToDB() {
         if (title === "") {
@@ -142,14 +114,15 @@ export default function AddArrangement({ open, handleClose }) {
             }
             let db = firebase.firestore();
             try {
-                const docRef = await db.collection("user_info/DlXAEufxhTCF0L2SvK39/arrangements").add({
+                const docRef = await db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").add({
                     title: title,
-                    day: day.format("M") + "月" + day.format("D") + "日 星期" + changeDay(day.format("d"))
+                    day: day.toDate(),
+                    progress: "arrangement"
                 });
                 console.log(docRef.id)
 
                 submit.forEach((element, index) => {
-                    db.collection("user_info/DlXAEufxhTCF0L2SvK39/arrangements/" + docRef.id + "/spots").add({
+                    db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels/" + docRef.id + "/spots").add({
                         order: index + 1,
                         location: element.location,
                         address: element.address,
@@ -171,7 +144,7 @@ export default function AddArrangement({ open, handleClose }) {
 
         }
     }
-    // console.log(day);
+    // console.log(day.toDate());
     return (
 
         <div>

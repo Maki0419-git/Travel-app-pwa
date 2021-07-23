@@ -17,6 +17,7 @@ import ArrangementDetail from "./ArrangementDetail";
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { Config } from '../firebase';
+import dayjs from 'dayjs';
 
 if (!firebase.apps.length) {
 
@@ -39,10 +40,47 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function changeDay(d) {
+    switch (d) {
+        case "0":
+            return "日"
+
+        case "1":
+            return "一"
+
+        case "2":
+            return "二"
+
+        case "3":
+            return "三"
+
+        case "4":
+            return "四"
+
+        case "5":
+            return "五"
+
+        case "6":
+            return "六"
+
+        default:
+
+            return "一"
+
+    }
+}
+
 export default function Arrangement() {
     const [open, setOpen] = React.useState(false);
     const [detailOpen, setDetailOpen] = React.useState(false);
     const [arrangements, setArrangements] = useState([])
+    const [selectedID, setSelectedID] = useState(false);
+    const [main, setMain] = useState({
+
+        title: "",
+        dsy: ""
+    })
+
     const classes = useStyles();
 
     const handleClose = () => {
@@ -50,25 +88,37 @@ export default function Arrangement() {
     };
 
     async function readData() {
+        try {
+            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").where("progress", "==", "arrangement")
+                .onSnapshot((snapshot) => {
+                    const data = snapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        title: doc.data().title,
+                        day: dayjs.unix(doc.data().day),
 
-        db.collection("user_info/DlXAEufxhTCF0L2SvK39/arrangements")
-            .onSnapshot((snapshot) => {
-                const data = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    title: doc.data().title,
-                    day: doc.data().day,
 
-                }
-                )
-                );
-                console.log("All Arrangements:", data);
+                    }
+                    )
+                    );
+                    console.log("All Arrangements:", data);
 
-                setArrangements(data)
+                    setArrangements(data)
 
-            })
+                })
+        } catch (e) { console.log(e) }
 
     }
+    function openDetail(i) {
+        setDetailOpen(true)
+        setSelectedID(i.id)
+        setMain({
 
+            title: i.title,
+            day: (i.day.format("M")) + "月" + i.day.format("D") + "日 星期" + changeDay(i.day.format("d"))
+
+        })
+
+    }
 
     useEffect(() => { readData() }, [])
 
@@ -79,38 +129,45 @@ export default function Arrangement() {
             </div>
             <div>
                 <div className={classes.root}>
-                    <List>
-                        <span className="font-link" style={{ fontSize: 18, fontWeight: 500 }}>
-                            7月19號 星期一
-                        </span>
-                        <Divider />
-                        <ListItem>
-                            <Grid container spacing={2} style={{ margin: 1 }}>
-                                <Grid item>
-                                    <div className="vl"></div>
-                                </Grid>
-                                <Grid item>
-                                    <span className="font-link" style={{ fontSize: 20 }}>
-                                        台南之旅
-                                    </span>
-                                </Grid>
+                    {arrangements.map((i) => (
+                        <List key={i.id}>
+                            <span className="font-link" style={{ fontSize: 18, fontWeight: 500 }}>
+                                {(i.day.format("M")) + "月" + i.day.format("D") + "日 星期" + changeDay(i.day.format("d"))}
+                            </span>
+                            <Divider />
 
-                            </Grid>
-                            <ListItemSecondaryAction>
-                                <IconButton edge="end" aria-label="delete">
-                                    <DeleteIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
+                            <ListItem onClick={() => { openDetail(i) }}>
 
-                        </ListItem>
-                    </List>
+
+                                <Divider />
+                                <Grid container spacing={2} style={{ margin: 1 }}>
+                                    <Grid item>
+                                        <div className="vl"></div>
+                                    </Grid>
+                                    <Grid item>
+                                        <span className="font-link" style={{ fontSize: 20 }}>
+                                            {i.title}
+                                        </span>
+                                    </Grid>
+
+                                </Grid>
+                                <ListItemSecondaryAction>
+                                    <IconButton edge="end" aria-label="delete">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+
+                            </ListItem>
+                        </List>
+                    ))}
+
 
                 </div>
                 <div >
                     <AddArrangement open={open} handleClose={handleClose} />
                 </div>
                 <div>
-                    <ArrangementDetail open={detailOpen} />
+                    <ArrangementDetail open={detailOpen} main={main} selectedID={selectedID} />
                 </div>
             </div>
             <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => setOpen(true)}>
