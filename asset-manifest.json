@@ -1,27 +1,27 @@
 {
   "files": {
     "main.css": "/Travel-app-pwa/static/css/main.76e3b416.chunk.css",
-    "main.js": "/Travel-app-pwa/static/js/main.1a1e947d.chunk.js",
-    "main.js.map": "/Travel-app-pwa/static/js/main.1a1e947d.chunk.js.map",
-    "runtime-main.js": "/Travel-app-pwa/static/js/runtime-main.635de2f3.js",
-    "runtime-main.js.map": "/Travel-app-pwa/static/js/runtime-main.635de2f3.js.map",
+    "main.js": "/Travel-app-pwa/static/js/main.b25eecd3.chunk.js",
+    "main.js.map": "/Travel-app-pwa/static/js/main.b25eecd3.chunk.js.map",
+    "runtime-main.js": "/Travel-app-pwa/static/js/runtime-main.0f1ced34.js",
+    "runtime-main.js.map": "/Travel-app-pwa/static/js/runtime-main.0f1ced34.js.map",
     "static/css/2.ac73090f.chunk.css": "/Travel-app-pwa/static/css/2.ac73090f.chunk.css",
-    "static/js/2.06864f4a.chunk.js": "/Travel-app-pwa/static/js/2.06864f4a.chunk.js",
-    "static/js/2.06864f4a.chunk.js.map": "/Travel-app-pwa/static/js/2.06864f4a.chunk.js.map",
-    "static/js/3.ef6e6ee3.chunk.js": "/Travel-app-pwa/static/js/3.ef6e6ee3.chunk.js",
-    "static/js/3.ef6e6ee3.chunk.js.map": "/Travel-app-pwa/static/js/3.ef6e6ee3.chunk.js.map",
+    "static/js/2.600f417d.chunk.js": "/Travel-app-pwa/static/js/2.600f417d.chunk.js",
+    "static/js/2.600f417d.chunk.js.map": "/Travel-app-pwa/static/js/2.600f417d.chunk.js.map",
+    "static/js/3.f3371704.chunk.js": "/Travel-app-pwa/static/js/3.f3371704.chunk.js",
+    "static/js/3.f3371704.chunk.js.map": "/Travel-app-pwa/static/js/3.f3371704.chunk.js.map",
     "index.html": "/Travel-app-pwa/index.html",
     "service-worker.js": "/Travel-app-pwa/service-worker.js",
     "service-worker.js.map": "/Travel-app-pwa/service-worker.js.map",
     "static/css/2.ac73090f.chunk.css.map": "/Travel-app-pwa/static/css/2.ac73090f.chunk.css.map",
     "static/css/main.76e3b416.chunk.css.map": "/Travel-app-pwa/static/css/main.76e3b416.chunk.css.map",
-    "static/js/2.06864f4a.chunk.js.LICENSE.txt": "/Travel-app-pwa/static/js/2.06864f4a.chunk.js.LICENSE.txt"
+    "static/js/2.600f417d.chunk.js.LICENSE.txt": "/Travel-app-pwa/static/js/2.600f417d.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.635de2f3.js",
+    "static/js/runtime-main.0f1ced34.js",
     "static/css/2.ac73090f.chunk.css",
-    "static/js/2.06864f4a.chunk.js",
+    "static/js/2.600f417d.chunk.js",
     "static/css/main.76e3b416.chunk.css",
-    "static/js/main.1a1e947d.chunk.js"
+    "static/js/main.b25eecd3.chunk.js"
   ]
 }
