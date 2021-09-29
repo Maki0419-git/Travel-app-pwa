@@ -66,7 +66,7 @@ export default function RecentPhoto() {
             <NavBar />
 
             <div className={classes.root}>
-
+                <iframe src='https://view.officeapps.live.com/op/embed.aspx?src=https://maki0419-git.github.io/Travel-app-pwa/電子商務.pptx' width='100%' height='600px' frameborder='0'></iframe>
                 <ImageList rowHeight={160} className={classes.imageList} cols={3}>
                     {itemData.map((item, index) => (
                         <ImageListItem key={item.img} cols={item.cols || 1}>
