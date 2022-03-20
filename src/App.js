@@ -1,11 +1,11 @@
 import { HashRouter, Route, Switch } from "react-router-dom";
-import NavBar from "./NavBar";
+import NavBar from "./Component/NavBar";
 import { createTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/core/styles";
-import RecentPhoto from "./RecentPhoto/RecentPhoto";
-import MyTravel from "./MyTravel/MyTravel";
-import Arrangement from "./Arrangement/Arrangement";
-import TravelRecord from "./TravelRecord/TravelRecord";
+import RecentPhoto from "./Component/RecentPhoto/RecentPhoto";
+import MyTravel from "./Component/MyTravel/MyTravel";
+import Arrangement from "./Component/Arrangement/Arrangement";
+import TravelRecord from "./Component/TravelRecord/TravelRecord";
 const theme = createTheme({
   palette: {
     primary: {
