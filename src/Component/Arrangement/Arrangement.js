@@ -10,32 +10,27 @@ import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import dayjs from 'dayjs';
 
 import AddArrangement from './AddArrangement';
 import ArrangementDetail from "./ArrangementDetail";
 import NavBar from "../NavBar";
-import { Config } from '../../firebase';
+import { db } from '../../Config/firebase';
 import "../../styles.css";
 
 
 
 
-if (!firebase.apps.length) {
-
-    firebase.initializeApp(Config);
-
-}
-let db = firebase.firestore();
 
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
-        maxWidth: 360,
         backgroundColor: theme.palette.background.paper,
-        padding: 10
+
+
+
+
     },
     fab: {
         position: 'fixed',
@@ -94,10 +89,12 @@ export default function Arrangement() {
 
     async function readData() {
         try {
-            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").where("progress", "==", "arrangement")
-                .onSnapshot((snapshot) => {
-                    const data = snapshot.docs.map((doc) => (
 
+            const q = query(collection(db, "user_info/DlXAEufxhTCF0L2SvK39/travels"), where("progress", "==", "arrangement"));
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const data = [];
+                querySnapshot.forEach((doc) => {
+                    data.push(
                         {
                             id: doc.id,
                             title: doc.data().title,
@@ -106,13 +103,11 @@ export default function Arrangement() {
 
 
                         }
-                    )
                     );
-                    console.log("All Arrangements:", data);
+                });
+                setArrangements(data)
 
-                    setArrangements(data)
-
-                })
+            });
         } catch (e) { console.log(e) }
 
     }
@@ -150,57 +145,45 @@ export default function Arrangement() {
     useEffect(() => { readData() }, [])
 
     return (
-        <div style={{ alignItems: "center", flex: 1 }}>
-            <div>
-                <NavBar />
-            </div>
-            <div>
-                <div className={classes.root}>
-                    {arrangements.map((i) => (
-                        <List key={i.id}>
-                            <span className="font-link" style={{ fontSize: 18, fontWeight: 500 }}>
-                                {(i.day.format("M")) + "月" + i.day.format("D") + "日 星期" + changeDay(i.day.format("d"))}
-                            </span>
-                            <Divider />
-
-                            <ListItem onClick={() => { openDetail(i) }}>
-
-
-                                <Divider />
-                                <Grid container spacing={2} style={{ margin: 1 }}>
-                                    <Grid item>
-                                        <div className="vl"></div>
-                                    </Grid>
-                                    <Grid item>
-                                        <span className="font-link" style={{ fontSize: 20 }}>
-                                            {i.title}
-                                        </span>
-                                    </Grid>
-
+        <div >
+            <NavBar />
+            <List className={classes.root}>
+                {arrangements.map((i) => (
+                    <div key={i.id} >
+                        <span className="font-link" style={{ fontSize: 18, fontWeight: 500, marginLeft: 20 }}>
+                            {(i.day.format("M")) + "月" + i.day.format("D") + "日 星期" + changeDay(i.day.format("d"))}
+                        </span>
+                        <Divider />
+                        <ListItem onClick={() => { openDetail(i) }} >
+                            <Grid container spacing={2} style={{ margin: 1 }}>
+                                <Grid item>
+                                    <div className="vl"></div>
                                 </Grid>
-                                <ListItemSecondaryAction>
-                                    <IconButton edge="end" aria-label="delete" onClick={() => { openAdd("edit"); setSelectedID(i.id) }} >
-                                        <EditIcon />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
+                                <Grid item>
+                                    <span className="font-link" style={{ fontSize: 20 }}>
+                                        {i.title}
+                                    </span>
+                                </Grid>
 
-                            </ListItem>
-                        </List>
-                    ))}
+                            </Grid>
+                            <ListItemSecondaryAction>
+                                <IconButton edge="end" aria-label="delete" onClick={() => { openAdd("edit"); setSelectedID(i.id) }} >
+                                    <EditIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
 
+                        </ListItem>
+                    </div>
 
-                </div>
-                <div >
-                    <AddArrangement open={open} handleClose={handleClose} id={selectedID} action={action} />
-                </div>
-                <div>
-                    <ArrangementDetail open={detailOpen} main={main} selectedID={selectedID} closeDetail={closeDetail} />
-                </div>
-            </div>
+                ))}
+
+            </List>
+
+            <AddArrangement open={open} handleClose={handleClose} id={selectedID} action={action} />
+            <ArrangementDetail open={detailOpen} main={main} selectedID={selectedID} closeDetail={closeDetail} />
             <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => openAdd("add")}>
                 <AddIcon />
             </Fab>
-
         </div >
     )
 }

@@ -19,16 +19,11 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import dayjs from 'dayjs';
 
-import { Config } from '../../firebase';
+import { db } from '../../Config/firebase';
 import Fields from "./Fields";
 
 
-if (!firebase.apps.length) {
 
-    firebase.initializeApp(Config);
-
-}
-let db = firebase.firestore();
 
 const useStyles = makeStyles((theme) => ({
     appBar: {

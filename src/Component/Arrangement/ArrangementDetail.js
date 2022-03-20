@@ -24,15 +24,10 @@ import 'firebase/firestore';
 import dayjs from 'dayjs';
 
 import "../../styles.css";
-import { Config } from '../../firebase';
+import { db } from '../../Config/firebase';
 
 
-if (!firebase.apps.length) {
 
-    firebase.initializeApp(Config);
-
-}
-let db = firebase.firestore();
 
 const styles = (theme) => ({
     root: {

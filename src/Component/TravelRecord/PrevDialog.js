@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import firebase from "firebase/app";
 import "firebase/storage";
 
-import { Config } from '../../firebase.js';
+import { storage } from '../../Config/firebase.js';
 import "../../styles.css";
 
 
@@ -102,13 +102,6 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
 
     const handleSubmit = () => {
 
-        if (!firebase.apps.length) {
-
-            firebase.initializeApp(Config);
-
-        }
-
-        const storage = firebase.storage();
 
         if (imageUpload) {
 
