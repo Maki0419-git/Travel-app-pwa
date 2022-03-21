@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
-    makeStyles,
+    makeStyles, alpha
 } from '@material-ui/core/styles';
 
 import {
@@ -26,7 +26,6 @@ export function DatePicker({ setDay, day }) {
 
     const classes = useStyles();
     return (
-
         <KeyboardDatePicker
             required
             className={classes.margin}
@@ -40,8 +39,7 @@ export function DatePicker({ setDay, day }) {
             value={day || ''}
             onChange={date => setDay(date)}
             color="primary"
-            style={{ width: "100%" }}
-
+            style={{ width: "100%", marginTop: 10, marginBottom: 10 }}
 
         />
 
@@ -50,9 +48,6 @@ export function DatePicker({ setDay, day }) {
 
 export function TimePicker({ clock, setTime, isSaved }) {
     // The first commit of Material-UI
-
-
-
     return (
 
         <KeyboardTimePicker
@@ -61,7 +56,6 @@ export function TimePicker({ clock, setTime, isSaved }) {
             label={<span className="font-link" style={{ fontSize: 20 }}>
                 旅遊時間
             </span>}
-
             mask="__:__ _M"
             value={clock}
             onChange={date => setTime(date)}
@@ -69,8 +63,6 @@ export function TimePicker({ clock, setTime, isSaved }) {
             InputProps={{
                 readOnly: isSaved,
             }}
-
-
         />
 
     );

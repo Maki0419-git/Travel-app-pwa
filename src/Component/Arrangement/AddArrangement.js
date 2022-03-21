@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -18,7 +19,7 @@ import { DatePicker } from "./DateSelection"
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import dayjs from 'dayjs';
-
+import { collection, addDoc } from "firebase/firestore";
 import { db } from '../../Config/firebase';
 import Fields from "./Fields";
 
@@ -35,6 +36,19 @@ const useStyles = makeStyles((theme) => ({
 
 
     },
+    boxContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: 5,
+        marginTop: 5
+    },
+    boxSpaceBetween: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 5,
+        marginTop: 5
+    }
 }));
 
 
@@ -55,12 +69,14 @@ function AddArrangement({ open, handleClose, id, action }) {
         city: ""
 
     }])
+    const finishOne = useRef(false);
     const [title, setTitle] = useState("")
     const [day, setDay] = useState(dayjs())
     const [requiredError, setRequiredError] = useState(false);
     console.log(submit);
 
     const saveField = (index, location, address, clock, memo, city) => {
+        finishOne.current = true;
         const copySub = [...submit];
         copySub[index] = { location: location, address: address, clock: clock, memo: memo, city: city }
         setSubmit(copySub);
@@ -130,6 +146,7 @@ function AddArrangement({ open, handleClose, id, action }) {
 
 
     useEffect(() => {
+        finishOne.current = false;
         readData();
         // console.log("open")
 
@@ -145,34 +162,31 @@ function AddArrangement({ open, handleClose, id, action }) {
         } else {
 
             try {
-                const docRef = await db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").add({
+                const docRef = await addDoc(collection(db, "user_info/DlXAEufxhTCF0L2SvK39/travels"), {
                     title: title,
-                    day: day.toDate(),
+                    day: day.format("YYYY-MM-DD"),
                     progress: "arrangement"
                 });
-                console.log(docRef.id)
 
-                submit.forEach((element, index) => {
-                    db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels/" + docRef.id + "/spots").add({
-                        order: index + 1,
-                        location: element.location,
-                        address: element.address,
-                        clock: element.clock.toDate(),
-                        memo: element.memo,
-                        city: element.city,
-
-                    })
-                });
+                console.log(finishOne.current)
+                if (finishOne.current) {
+                    submit.forEach((element, index) => {
+                        addDoc(collection(db, "user_info/DlXAEufxhTCF0L2SvK39/travels/" + docRef.id + "/spots"), {
+                            order: index + 1,
+                            location: element.location,
+                            address: element.address,
+                            clock: element.clock.format("HH:mm"),
+                            memo: element.memo,
+                            city: element.city,
+                        });
+                    });
+                }
             }
             catch (error) {
                 console.error("Error adding arrangement: ", error);
             }
 
             handleClose();
-
-
-
-
         }
     }
     // console.log(day.toDate());
@@ -197,90 +211,58 @@ function AddArrangement({ open, handleClose, id, action }) {
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <DialogContent style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+                <DialogContent>
+                    {/* name */}
+                    <Box className={classes.boxContainer}>
+                        <div className="vl"></div>
+                        <span className="font-link" style={{ fontSize: 20, marginLeft: 10 }}>
+                            為你的旅遊取個名字吧!
+                        </span>
+                    </Box>
+                    <TextField
+                        error={requiredError}
+                        label={<span className="font-link" style={{ fontSize: 20 }}>
+                            命名
+                        </span>}
+                        required
+                        value={title}
+                        variant="outlined"
+                        onChange={(event) => setTitle(event.target.value)}
+                        style={{ marginTop: 5, marginBottom: 10, width: "100%" }}
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
+                                <BorderColorIcon />
+                            </InputAdornment>,
 
-                    <div style={{ flexDirection: "column", width: "100%", alignItems: "center" }}>
-                        <Grid container spacing={2} style={{ marginBottom: 5, marginTop: 5 }} >
-                            <Grid item >
-                                <div className="vl"></div>
-                            </Grid>
-                            <Grid item>
-                                <span className="font-link" style={{ fontSize: 20 }}>
-                                    為你的旅遊取個名字吧!
-                                </span>
-                            </Grid>
-
-                        </Grid>
-                        <TextField
-
-                            error={requiredError}
-                            label={<span className="font-link" style={{ fontSize: 20 }}>
-                                命名
-                            </span>}
-                            required
-                            value={title}
-                            variant="outlined"
-                            onChange={(event) => setTitle(event.target.value)}
-                            style={{ marginTop: 5, marginBottom: 10, width: "100%" }}
-                            InputProps={{
-                                endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
-                                    <BorderColorIcon />
-                                </InputAdornment>,
-
-                            }}
-
-
-                        />
-                    </div>
-                    <div style={{ flexDirection: "column", width: "100%", alignItems: "center" }}>
-                        <Grid container spacing={2} style={{ marginBottom: 5, marginTop: 5 }} >
-                            <Grid item >
-                                <div className="vl"></div>
-                            </Grid>
-                            <Grid item>
-                                <span className="font-link" style={{ fontSize: 20 }}>
-                                    何時旅遊?
-                                </span>
-                            </Grid>
-
-                        </Grid>
-                        <DatePicker setDay={setDay} day={day} />
-                    </div>
-                    <div style={{ flexDirection: "column", width: "100%" }}>
-
-                        <Grid container spacing={2} style={{ marginTop: 5, alignItems: "center", position: "relative", right: 14 }} >
-                            <Grid item auto="true">
-
-                            </Grid>
-                            <Grid item >
-                                <div className="vl"></div>
-                            </Grid>
-                            <Grid item xs={7}>
-                                <span className="font-link" style={{ fontSize: 20 }}>
-                                    想去哪裡?
-                                </span>
-                            </Grid>
-
-                            <Grid item position="end">
-                                <Button color="primary"
-                                    onClick={addField}
-                                ><span className="font-link" style={{ fontSize: 14 }}>
-                                        新增景點
-                                    </span>
-                                    <AddIcon style={{ fontSize: 15 }} />
-                                </Button>
-                            </Grid>
-                        </Grid>
-
-                    </div>
-                    <div style={{ flexDirection: "column", width: "100%", alignItems: "center" }}>
-                        {submit.map((i, index) => (
-                            <Fields data={i} saveField={saveField} deleteField={deleteField} key={i.clock} index={index} />
-                        ))}
-                    </div>
-
-
-
+                        }}
+                    />
+                    {/* time */}
+                    <Box className={classes.boxContainer}>
+                        <div className="vl"></div>
+                        <span className="font-link" style={{ fontSize: 20, marginLeft: 10 }}>
+                            何時旅遊?
+                        </span>
+                    </Box>
+                    <DatePicker setDay={setDay} day={day} />
+                    {/* where */}
+                    <Box className={classes.boxSpaceBetween}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <div className="vl"></div>
+                            <span className="font-link" style={{ fontSize: 20, marginLeft: 10 }}>
+                                想去哪裡?
+                            </span>
+                        </div>
+                        <Button color="primary"
+                            onClick={addField}
+                        ><span className="font-link" style={{ fontSize: 14 }}>
+                                新增景點
+                            </span>
+                            <AddIcon style={{ fontSize: 15 }} />
+                        </Button>
+                    </Box>
+                    {submit.map((i, index) => (
+                        <Fields data={i} saveField={saveField} deleteField={deleteField} key={index} index={index} />
+                    ))}
                 </DialogContent>
             </Dialog>
         </div >

@@ -39,27 +39,22 @@ const Fields = ({ data, saveField, deleteField, index }) => {
 
 
     return (
-        <div style={{ flexDirection: "column", width: "100%", marginTop: 10 }}>
-            <Grid container >
-                <Grid item xs={10} style={{ paddingTop: 10 }}>
-                    <Typography variant="h6" color="primary">
-                        <span className="font-link" style={{ fontSize: 20, }}>
-                            第 {index + 1} 站
-                        </span>
-                    </Typography>
-                </Grid>
+        <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h6" color="primary">
+                    <span className="font-link" style={{ fontSize: 20, }}>
+                        第 {index + 1} 站
+                    </span>
+                </Typography>
                 {isSaved &&
-                    <>
 
-                        <Grid item xs={1} sm={4}>
-                            <IconButton
-                                onClick={() => { setIsSaved(false) }}
-                            ><EditIcon /></IconButton>
-                        </Grid>
-                    </>
+                    <IconButton
+                        onClick={() => { setIsSaved(false) }}
+                    ><EditIcon /></IconButton>
+
+
                 }
-            </Grid>
-
+            </div>
             <Divider />
             <form autoComplete="off" onSubmit={(event) => event.preventDefault()} style={{ width: "100%", flexDirection: "column", marginTop: 15 }} >
                 <div style={{ marginTop: 8, marginBottom: 15, }}>
@@ -69,11 +64,9 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                         label={<span className="font-link" style={{ fontSize: 20 }}>
                             景點
                         </span>}
-
                         value={location || ''}
                         variant="outlined"
                         onChange={(event) => setLoaction(event.target.value)}
-
                         style={{ width: "100%" }}
                         InputProps={{
                             endAdornment: <InputAdornment position="end" style={{ paddingRight: 10 }}>
@@ -81,8 +74,6 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                             </InputAdornment>,
                             readOnly: isSaved,
                         }}
-
-
                     />
                 </div>
                 <div style={{ marginTop: 8, marginBottom: 15, }}>
@@ -100,18 +91,15 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                         }}
                     >
                         {availableLocations.map((i) => (
-                            <MenuItem value={i.cityName}><span className="font-link" style={{ fontSize: 16, }}>{i.cityName}</span></MenuItem>
+                            <MenuItem value={i.cityName} key={i.cityName} ><span className="font-link" style={{ fontSize: 16, }}>{i.cityName}</span></MenuItem>
                         ))}
                     </Select>
                 </div>
                 <div style={{ marginTop: 8, marginBottom: 15, }}>
                     <TextField
-
-
                         label={<span className="font-link" style={{ fontSize: 20 }}>
                             地址
                         </span>}
-
                         value={address || ''}
                         variant="outlined"
                         onChange={(event) => setAddress(event.target.value)}
@@ -122,8 +110,6 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                             </InputAdornment>,
                             readOnly: isSaved,
                         }}
-
-
                     />
                 </div>
                 <div style={{ marginTop: 8, marginBottom: 15, }}>
@@ -131,12 +117,9 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                 </div>
                 <div style={{ marginTop: 8, marginBottom: 15, }}>
                     <TextField
-
-
                         label={<span className="font-link" style={{ fontSize: 20 }}>
                             備註
                         </span>}
-
                         value={memo || ''}
                         variant="outlined"
                         onChange={(event) => setMemo(event.target.value)}
@@ -149,14 +132,12 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                         }}
                         multiline
                         rows={3}
-
-
                     />
                 </div>
-                {isSaved === false &&
+                {!isSaved &&
                     <Grid container spacing={3}>
                         <Grid item xs={6}>
-                            <Button variant="outlined" color="primary"
+                            <Button variant="outlined" color="primary" disabled={!index}
                                 style={{ marginTop: 10, width: "100%" }}
                                 onClick={() => { deleteField(index) }}
                             >
@@ -169,7 +150,6 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                                 onClick={() => {
                                     if (location && city !== "") {
                                         saveField(index, location, address, clock, memo, city); setIsSaved(true); setIfError(false)
-
                                     } else { setIfError(true) }
                                 }}
                                 type="submit"
@@ -182,7 +162,6 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                 }
                 {/* <Alert error={ifError} /> */}
             </form>
-
         </div>
     )
 }

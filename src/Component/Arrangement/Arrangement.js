@@ -98,10 +98,7 @@ export default function Arrangement() {
                         {
                             id: doc.id,
                             title: doc.data().title,
-                            day: dayjs.unix(doc.data().day.seconds),
-
-
-
+                            day: dayjs(doc.data().day),
                         }
                     );
                 });
@@ -151,7 +148,8 @@ export default function Arrangement() {
                 {arrangements.map((i) => (
                     <div key={i.id} >
                         <span className="font-link" style={{ fontSize: 18, fontWeight: 500, marginLeft: 20 }}>
-                            {(i.day.format("M")) + "月" + i.day.format("D") + "日 星期" + changeDay(i.day.format("d"))}
+                            {i.day.format("YYYY 年 M 月 D 日 ") + `(${changeDay(i.day.format("d"))})`}
+                            {/* {(i.day.format("M")) + "月" + i.day.format("D") + "日 星期" + changeDay(i.day.format("d"))} */}
                         </span>
                         <Divider />
                         <ListItem onClick={() => { openDetail(i) }} >
