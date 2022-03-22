@@ -18,12 +18,12 @@ import dayjs from 'dayjs'
 import Select from '@material-ui/core/Select';
 import { availableLocations } from "../../CityCountyData";
 
-const Fields = ({ data, saveField, deleteField, index }) => {
+const Fields = ({ data, saveField, deleteField, index, }) => {
 
     const [location, setLoaction] = useState("");
     const [address, setAddress] = useState("");
     const [memo, setMemo] = useState("");
-    const [clock, setTime] = useState(dayjs());
+    const [clock, setTime] = useState(dayjs().format("H:m"));
     const [city, setCity] = useState("");
     const [isSaved, setIsSaved] = useState(false);
     const [ifError, setIfError] = useState(false);
@@ -34,6 +34,7 @@ const Fields = ({ data, saveField, deleteField, index }) => {
         setTime(data.clock)
         setMemo(data.memo)
         setCity(data.city)
+        setIsSaved(data.save)
     }, [data])
 
 
@@ -139,7 +140,7 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                         <Grid item xs={6}>
                             <Button variant="outlined" color="primary" disabled={!index}
                                 style={{ marginTop: 10, width: "100%" }}
-                                onClick={() => { deleteField(index) }}
+                                onClick={() => { deleteField(index); }}
                             >
                                 刪除
                             </Button>
@@ -149,7 +150,7 @@ const Fields = ({ data, saveField, deleteField, index }) => {
                                 style={{ marginTop: 10, width: "100%" }}
                                 onClick={() => {
                                     if (location && city !== "") {
-                                        saveField(index, location, address, clock, memo, city); setIsSaved(true); setIfError(false)
+                                        saveField(index, location, address, clock, memo, city); setIfError(false)
                                     } else { setIfError(true) }
                                 }}
                                 type="submit"

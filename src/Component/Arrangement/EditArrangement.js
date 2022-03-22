@@ -12,15 +12,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { DatePicker } from "./DateSelection"
-import firebase from 'firebase/app';
-import 'firebase/firestore';
 import dayjs from 'dayjs';
-import { collection, addDoc } from "firebase/firestore";
-import { db } from '../../Config/firebase';
+import { getSpots, addSpots, deleteSpots, getArrangements, addArrangement } from '../../utils/firebaseFunc';
 import Fields from "./Fields";
 
 
@@ -58,33 +54,28 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 
-function AddArrangement({ open, handleClose, id, action }) {
+function EditArrangement({ open, handleClose, id, action, main }) {
     const classes = useStyles();
     const [submit, setSubmit] = useState([{
-
         location: "",
         address: "",
-        clock: dayjs(),
+        clock: dayjs().format("H:m"),
         memo: "",
-        city: ""
+        city: "",
+        save: false
 
     }])
-    const finishOne = useRef(false);
     const [title, setTitle] = useState("")
     const [day, setDay] = useState(dayjs())
     const [requiredError, setRequiredError] = useState(false);
-    console.log(submit);
-
     const saveField = (index, location, address, clock, memo, city) => {
-        finishOne.current = true;
         const copySub = [...submit];
-        copySub[index] = { location: location, address: address, clock: clock, memo: memo, city: city }
+        copySub[index] = { location, address, clock, memo, city, save: true }
         setSubmit(copySub);
     }
 
 
     const deleteField = (index) => {
-        console.log("index:" + index)
         const copySub = [...submit]
         copySub.splice(index, 1)
         setSubmit(copySub)
@@ -97,9 +88,10 @@ function AddArrangement({ open, handleClose, id, action }) {
             {
                 location: "",
                 address: "",
-                clock: dayjs(),
+                clock: dayjs().format("H:m"),
                 memo: "",
                 city: "",
+                save: false
             }
         ]))
     }
@@ -112,46 +104,25 @@ function AddArrangement({ open, handleClose, id, action }) {
             setRequiredError(false)
             setDay(dayjs())
             setSubmit([{
-
                 location: "",
                 address: "",
-                clock: dayjs(),
+                clock: dayjs().format("H:m"),
                 memo: "",
-                city: ""
+                city: "",
+                save: false
             }])
         } else {
-
-            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels/" + id + "/spots")
-                .onSnapshot((snapshot) => {
-                    const data = snapshot.docs.map((doc) => ({
-                        city: doc.data().city,
-                        location: doc.data().location,
-                        address: doc.data().address,
-                        clock: dayjs.unix(doc.data().clock),
-                        memo: doc.data().memo
-                    }
-                    )
-                    );
-                    console.log("All locations:", data);
-                    setSubmit(data);
-
-                })
-            db.collection("user_info/DlXAEufxhTCF0L2SvK39/travels").doc(id).onSnapshot((snapshot) => {
-                setTitle(snapshot.data().title)
-                console.log(dayjs.unix(snapshot.data().day.seconds))
-                setDay(dayjs.unix(snapshot.data().day.seconds))
-            })
+            const spots = await getSpots("DlXAEufxhTCF0L2SvK39", id);
+            setSubmit(spots)
+            setTitle(main.title)
+            setDay(main.day.format("YYYY/MM/DD"))
         }
     }
 
 
     useEffect(() => {
-        finishOne.current = false;
+
         readData();
-        // console.log("open")
-
-
-        // }])
     }, [open])
 
 
@@ -159,37 +130,31 @@ function AddArrangement({ open, handleClose, id, action }) {
     async function saveToDB() {
         if (title === "") {
             setRequiredError(true)
-        } else {
-
-            try {
-                const docRef = await addDoc(collection(db, "user_info/DlXAEufxhTCF0L2SvK39/travels"), {
-                    title: title,
-                    day: day.format("YYYY-MM-DD"),
-                    progress: "arrangement"
-                });
-
-                console.log(finishOne.current)
-                if (finishOne.current) {
-                    submit.forEach((element, index) => {
-                        addDoc(collection(db, "user_info/DlXAEufxhTCF0L2SvK39/travels/" + docRef.id + "/spots"), {
-                            order: index + 1,
-                            location: element.location,
-                            address: element.address,
-                            clock: element.clock.format("HH:mm"),
-                            memo: element.memo,
-                            city: element.city,
+        }
+        else if (submit.some((filed) => filed.save === false)) {
+            alert("您有行程尚未儲存")
+        }
+        else {
+            if (action === "add") {
+                try {
+                    const travelID = await addArrangement("DlXAEufxhTCF0L2SvK39",
+                        {
+                            title: title,
+                            day: day.format("YYYY-MM-DD"),
+                            progress: "arrangement"
                         });
-                    });
-                }
+                    await addSpots("DlXAEufxhTCF0L2SvK39", travelID, submit);
+                } catch (e) { console.log(e) }
+            } else if (action === "edit") {
+                try {
+                    await deleteSpots("DlXAEufxhTCF0L2SvK39", id);
+                    await addSpots("DlXAEufxhTCF0L2SvK39", id, submit)
+                } catch (e) { console.log(e) }
             }
-            catch (error) {
-                console.error("Error adding arrangement: ", error);
-            }
-
             handleClose();
         }
     }
-    // console.log(day.toDate());
+
     return (
 
         <div>
@@ -261,7 +226,14 @@ function AddArrangement({ open, handleClose, id, action }) {
                         </Button>
                     </Box>
                     {submit.map((i, index) => (
-                        <Fields data={i} saveField={saveField} deleteField={deleteField} key={index} index={index} />
+                        <Fields
+                            data={i}
+                            saveField={saveField}
+                            deleteField={deleteField}
+                            key={index}
+                            index={index}
+                            action={action}
+                        />
                     ))}
                 </DialogContent>
             </Dialog>
@@ -281,4 +253,4 @@ function areEqual(prevProps, nextProps) {
 }
 
 
-export default React.memo(AddArrangement, areEqual)
+export default React.memo(EditArrangement, areEqual)

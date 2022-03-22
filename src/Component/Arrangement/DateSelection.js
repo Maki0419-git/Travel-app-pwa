@@ -8,7 +8,7 @@ import {
     KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
-
+import dayjs from 'dayjs';
 
 
 
@@ -22,8 +22,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 export function DatePicker({ setDay, day }) {
-    // The first commit of Material-UI
-
     const classes = useStyles();
     return (
         <KeyboardDatePicker
@@ -34,22 +32,23 @@ export function DatePicker({ setDay, day }) {
             </span>}
             variant="inline"
             inputVariant="outlined"
-            placeholder="ex: DD/MM/AAAA"
+            placeholder="ex: YYYY/MM/DD"
             format="YYYY/MM/DD"
             value={day || ''}
             onChange={date => setDay(date)}
             color="primary"
             style={{ width: "100%", marginTop: 10, marginBottom: 10 }}
-
         />
 
     );
 }
 
 export function TimePicker({ clock, setTime, isSaved }) {
-    // The first commit of Material-UI
+    const { h, m } = ((clock) => {
+        const turnStringClockToNumber = clock.split(":");
+        return { h: Number(turnStringClockToNumber[0]), m: Number(turnStringClockToNumber[1]) }
+    })(clock);
     return (
-
         <KeyboardTimePicker
             variant="inline"
             inputVariant="outlined"
@@ -57,12 +56,10 @@ export function TimePicker({ clock, setTime, isSaved }) {
                 旅遊時間
             </span>}
             mask="__:__ _M"
-            value={clock}
-            onChange={date => setTime(date)}
+            value={dayjs().hour(h).minute(m)}
+            onChange={time => setTime(time.format("H:m"))}
             style={{ width: "100%" }}
-            InputProps={{
-                readOnly: isSaved,
-            }}
+            disabled={isSaved}
         />
 
     );
