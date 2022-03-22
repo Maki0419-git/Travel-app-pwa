@@ -309,7 +309,7 @@ export default function VerticalLinearStepper() {
                                         onClick={handleBack}
                                         className={classes.button}
                                     >
-                                        Back
+                                        Bac
                                     </Button>
                                     <Button
                                         variant="contained"
