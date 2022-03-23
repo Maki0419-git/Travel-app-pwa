@@ -1,235 +1,5 @@
-// import React, { useEffect, useState } from 'react';
-// import { withStyles, makeStyles } from '@material-ui/core/styles';
-// import Button from '@material-ui/core/Button';
-// import Dialog from '@material-ui/core/Dialog';
-// import MuiDialogTitle from '@material-ui/core/DialogTitle';
-// import MuiDialogContent from '@material-ui/core/DialogContent';
-// import MuiDialogActions from '@material-ui/core/DialogActions';
-// import IconButton from '@material-ui/core/IconButton';
-// import CloseIcon from '@material-ui/icons/Close';
-// import Typography from '@material-ui/core/Typography';
-// import Stepper from '@material-ui/core/Stepper';
-// import Step from '@material-ui/core/Step';
-// import StepLabel from '@material-ui/core/StepLabel';
-// import StepContent from '@material-ui/core/StepContent';
-// import Box from '@material-ui/core/Box';
-// import Paper from '@material-ui/core/Paper';
-// import EventIcon from '@material-ui/icons/Event';
-// import LocationOnIcon from '@material-ui/icons/LocationOn';
-// import WatchLaterIcon from '@material-ui/icons/WatchLater';
-// import DescriptionIcon from '@material-ui/icons/Description';
-// import TextField from '@material-ui/core/TextField';
-// import { collection, query, where, getDocs } from "firebase/firestore";
-// import dayjs from 'dayjs';
 
-// import "../../styles.css";
-// import { db } from '../../Config/firebase';
-
-
-
-
-// const styles = (theme) => ({
-//     root: {
-//         margin: 0,
-//         padding: theme.spacing(2),
-//     },
-//     closeButton: {
-//         position: 'absolute',
-//         right: theme.spacing(1),
-//         top: theme.spacing(1),
-//         color: theme.palette.grey[500],
-//     },
-
-// });
-
-// const useStyles = makeStyles((theme) => ({
-//     root: {
-//         width: '100%',
-//     },
-//     button: {
-//         marginTop: theme.spacing(1),
-//         marginRight: theme.spacing(1),
-//     },
-//     actionsContainer: {
-//         marginBottom: theme.spacing(2),
-//     },
-//     resetContainer: {
-//         padding: theme.spacing(3),
-//     },
-// }));
-
-// const DialogTitle = withStyles(styles)((props) => {
-//     const { children, classes, onClose, ...other } = props;
-
-//     return (
-//         <MuiDialogTitle disableTypography className={classes.root} {...other}>
-//             <Typography variant="h6">{children}</Typography>
-//             {onClose ? (
-//                 <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-//                     <CloseIcon />
-//                 </IconButton>
-//             ) : null}
-//         </MuiDialogTitle>
-//     );
-// });
-
-// const DialogContent = withStyles((theme) => ({
-//     root: {
-//         padding: theme.spacing(2),
-//     },
-// }))(MuiDialogContent);
-
-// const DialogActions = withStyles((theme) => ({
-//     root: {
-//         margin: 0,
-//         padding: theme.spacing(1),
-//     },
-// }))(MuiDialogActions);
-
-
-
-
-// function getStepContent(i) {
-//     return (
-//         <div style={{ width: '100%', }}>
-
-//             <Box display="flex" justifyContent="flex-start" >
-//                 <Box >
-//                     <LocationOnIcon fontSize="small" style={{ margin: 3 }} color="disabled" />
-//                 </Box>
-//                 <Box >
-//                     <span className="font-link" style={{ fontSize: 14, fontWeight: 300 }}>
-//                         {i.address}
-//                     </span>
-//                 </Box>
-
-//             </Box>
-//             <Box display="flex" justifyContent="flex-start" >
-//                 <Box >
-//                     <WatchLaterIcon fontSize="small" style={{ margin: 3 }} color="disabled" />
-//                 </Box>
-//                 <Box >
-//                     <span className="font-link" style={{ fontSize: 14, fontWeight: 300 }}>
-//                         {i.clock.format("HH:mm")}
-//                     </span>
-//                 </Box>
-
-//             </Box>
-//             <Box display="flex" justifyContent="flex-start" >
-//                 <Box >
-//                     <DescriptionIcon fontSize="small" style={{ margin: 3 }} color="disabled" />
-//                 </Box>
-//                 <Box >
-//                     <TextField
-//                         value={i.memo}
-//                         variant="outlined"
-//                         style={{ width: "100%" }}
-//                         InputProps={{
-//                             readOnly: true,
-//                         }}
-//                         multiline
-//                         rows={3}
-
-
-//                     />
-
-
-//                 </Box>
-
-//             </Box>
-
-//         </div>
-//     )
-
-// }
-
-// export default function ArrangementDetail({ open, main, selectedID, closeDetail }) {
-//     const classes = useStyles();
-//     const [activeStep, setActiveStep] = React.useState(0);
-//     const [mainContent, setMainContent] = useState({
-//         title: main.title,
-//         day: main.day
-//     })
-//     const [detail, setDetail] = useState([]);
-
-
-
-//     const handleNext = () => {
-//         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-//     };
-
-//     const handleBack = () => {
-//         setActiveStep((prevActiveStep) => prevActiveStep - 1);
-//     };
-
-//     const handleReset = () => {
-//         setActiveStep(0);
-//     };
-
-//     async function readData() {
-//         try {
-//             if (selectedID != "") {
-//                 const q = query(collection(db, "user_info/DlXAEufxhTCF0L2SvK39/travels/" + selectedID + "/spots"));
-//                 const querySnapshot = await getDocs(q);
-//                 let data = [];
-//                 querySnapshot.forEach((doc) => {
-//                     console.log(dayjs().hour(12))
-//                     data.push(
-//                         {
-//                             id: doc.id,
-//                             location: doc.data().location,
-//                             address: doc.data().address,
-//                             clock: doc.data().clock,
-//                             memo: doc.data().memo
-//                         }
-//                     )
-//                 });
-
-//                 setDetail(data);
-//             }
-//         } catch (e) { console.log(e) }
-//     }
-
-
-//     // useEffect(() => { setMainContent({ title: main.title, day: main.day }); readData() }, [open])
-//     return (
-
-//                         <Stepper activeStep={activeStep} orientation="vertical">
-//                             {detail.map((i, index) => (
-//                                 <Step key={i.id}>
-//                                     <StepLabel><span className="font-link" style={{ fontSize: 20, fontWeight: 500 }}>
-//                                         {i.location}
-//                                     </span></StepLabel>
-//                                     <StepContent>
-//                                         {getStepContent(i)}
-//                                         <div className={classes.actionsContainer}>
-//                                             <div>
-//                                                 <Button
-//                                                     disabled={activeStep === 0}
-//                                                     onClick={handleBack}
-//                                                     className={classes.button}
-//                                                 >
-//                                                     Back
-//                                                 </Button>
-//                                                 <Button
-//                                                     variant="contained"
-//                                                     color="primary"
-//                                                     onClick={handleNext}
-//                                                     className={classes.button}
-//                                                 >
-//                                                     {activeStep === detail.length - 1 ? 'Finish' : 'Next'}
-//                                                 </Button>
-//                                             </div>
-//                                         </div>
-//                                     </StepContent>
-//                                 </Step>
-//                             ))}
-//                         </Stepper>
-
-//     );
-// }
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -238,10 +8,23 @@ import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import WatchLaterIcon from '@material-ui/icons/WatchLater';
+import DescriptionIcon from '@material-ui/icons/Description';
+import TextField from '@material-ui/core/TextField';
+import { getSpots } from '../../utils/firebaseFunc';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '100%',
+        width: '95%',
+        paddingLeft: 5,
+    },
+    step: {
+        '&.MuiStepper-root': {
+            paddingTop: 10
+        }
     },
     button: {
         marginTop: theme.spacing(1),
@@ -253,34 +36,64 @@ const useStyles = makeStyles((theme) => ({
     resetContainer: {
         padding: theme.spacing(3),
     },
+    icon: {
+        margin: 10,
+    },
+    span: {
+        fontSize: 16,
+        fontWeight: 300,
+        fontFamily: 'Noto Serif TC'
+    },
+    alert: {
+        width: '100%',
+        marginLeft: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+    },
 }));
 
-function getSteps() {
-    return ['Select campaign settings', 'Create an ad group', 'Create an ad'];
+
+function GetStepContent({ details }) {
+    const classes = useStyles();
+    return (
+        <div style={{ width: '100%', }}>
+
+            <Box display="flex" alignItems="center">
+                <LocationOnIcon className={classes.icon} color="disabled" fontSize="medium" />
+                <span className={classes.span}>
+                    {details.address}
+                </span>
+            </Box>
+            <Box display="flex" alignItems="center" >
+                <WatchLaterIcon className={classes.icon} color="disabled" fontSize="medium" />
+                <span className={classes.span}>
+                    {details.clock}
+                </span>
+            </Box>
+            <Box display="flex" alignItems="flex-start" >
+                <DescriptionIcon className={classes.icon} color="disabled" fontSize="medium" />
+                <TextField
+                    value={details.memo}
+                    variant="outlined"
+                    style={{ width: "100%", }}
+                    InputProps={{
+                        readOnly: true,
+                        className: classes.span
+                    }}
+                    multiline
+                    minRows={3}
+                />
+            </Box>
+
+        </div>
+    )
+
 }
 
-function getStepContent(step) {
-    switch (step) {
-        case 0:
-            return `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`;
-        case 1:
-            return 'An ad group contains one or more ads which target a shared set of keywords.';
-        case 2:
-            return `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`;
-        default:
-            return 'Unknown step';
-    }
-}
 
-export default function VerticalLinearStepper() {
+export default function ArrangementDetail({ id }) {
+    const [spots, setSpots] = useState([]);
     const classes = useStyles();
     const [activeStep, setActiveStep] = React.useState(0);
-    const steps = getSteps();
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -293,15 +106,29 @@ export default function VerticalLinearStepper() {
     const handleReset = () => {
         setActiveStep(0);
     };
+    async function readData() {
+        try {
 
+            const spots = await getSpots("DlXAEufxhTCF0L2SvK39", id);
+            setSpots(spots);
+
+        } catch (e) { console.log(e) }
+    }
+
+    console.log(spots)
+    useEffect(() => readData(), [])
     return (
         <div className={classes.root}>
-            <Stepper activeStep={activeStep} orientation="vertical">
-                {steps.map((label, index) => (
-                    <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
+            <Stepper activeStep={activeStep} orientation="vertical" className={classes.step}>
+                {spots.map((spot, index) => (
+                    <Step key={index}>
+                        <StepLabel>
+                            <span className="font-link" style={{ fontSize: 20, fontWeight: 500 }}>
+                                {spot.location}
+                            </span>
+                        </StepLabel>
                         <StepContent>
-                            <Typography>{getStepContent(index)}</Typography>
+                            <GetStepContent details={spot} />
                             <div className={classes.actionsContainer}>
                                 <div>
                                     <Button
@@ -309,7 +136,7 @@ export default function VerticalLinearStepper() {
                                         onClick={handleBack}
                                         className={classes.button}
                                     >
-                                        Bac
+                                        上一站
                                     </Button>
                                     <Button
                                         variant="contained"
@@ -317,7 +144,7 @@ export default function VerticalLinearStepper() {
                                         onClick={handleNext}
                                         className={classes.button}
                                     >
-                                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                        {activeStep === spots.length - 1 ? '結束' : '下一站'}
                                     </Button>
                                 </div>
                             </div>
@@ -325,13 +152,17 @@ export default function VerticalLinearStepper() {
                     </Step>
                 ))}
             </Stepper>
-            {activeStep === steps.length && (
-                <Paper square elevation={0} className={classes.resetContainer}>
-                    <Typography>All steps completed - you&apos;re finished</Typography>
-                    <Button onClick={handleReset} className={classes.button}>
-                        Reset
-                    </Button>
-                </Paper>
+            {activeStep === spots.length && (
+                <Alert
+                    className={classes.alert}
+                    action={
+                        <Button color="inherit" size="small" onClick={handleReset}>
+                            從頭開始看
+                        </Button>
+                    }
+                >
+                    您的旅程已結束!
+                </Alert>
             )}
         </div>
     );

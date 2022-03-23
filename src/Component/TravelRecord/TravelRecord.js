@@ -3,7 +3,6 @@ import TravelDetail from "./TravelDetail";
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,9 +12,12 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
+import Box from '@material-ui/core/Box';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import NavBar from "../NavBar";
+import '../../styles.css';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -23,15 +25,37 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flex: 1,
         flexDirection: "column",
-        alignItems: "center"
+
     },
     root: {
-        maxWidth: 345,
-        margin: 20
+        margin: 20,
     },
     media: {
-        height: 0,
         paddingTop: '56.25%', // 16:9
+        backgroundImage: `linear-gradient(rgba(0,0,0, 0.25), rgba(0,0,0, 0.55)),url(${process.env.PUBLIC_URL}/img/landscape/0.jpg)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        position: "relative"
+    },
+    mediaTextContainer: {
+        position: 'absolute',
+        bottom: 0,
+        display: "flex",
+        width: '97%',
+        justifyContent: "space-between"
+    },
+    mediaTitle: {
+        color: 'white',
+    },
+    mediaDate: {
+        color: 'white',
+        marginLeft: 4
+    },
+    mediaMore: {
+        position: 'absolute',
+        top: 4,
+        right: 2,
+        color: 'white',
     },
     expand: {
         transform: 'rotate(0deg)',
@@ -63,46 +87,30 @@ export default function TravelRecord() {
             <NavBar />
             <div>
                 <Card className={classes.root}>
-                    <CardHeader
-
-                        action={
-                            <IconButton aria-label="settings">
-                                <MoreVertIcon />
-                            </IconButton>
-                        }
-                        title="Shrimp and Chorizo "
-                        subheader="September 14, 2016"
-                    />
-
                     <CardMedia
                         className={classes.media}
-                        image="/static/images/cards/paella.jpg"
+                        // image={`${process.env.PUBLIC_URL}/img/landscape/1.jpg`}
                         title="Paella dish"
-                    />
+                    >
+                        <MoreVertIcon className={classes.mediaMore} fontSize="large" />
+                        <CardContent className={classes.mediaTextContainer}>
+                            <Box>
+                                <Typography variant="h2" component="p" className={classes.mediaTitle}>
+                                    Shrimp and Chorizo
+                                </Typography>
+                                <Typography variant="h6" component="p" className={classes.mediaDate}>
+                                    September 14, 2016
+                                </Typography>
+                            </Box>
+                            <ArrowRightAltIcon className="float-arrow" fontSize="large" style={{ fontSize: 50 }} />
+                        </CardContent>
+                    </CardMedia>
                     <CardContent>
                         <Typography variant="body2" color="textSecondary" component="p">
                             This impressive paella is a perfect party dish and a fun meal to cook together with your
                             guests. Add 1 cup of frozen peas along with the mussels, if you like.
                         </Typography>
                     </CardContent>
-                    <CardActions disableSpacing>
-                        <IconButton aria-label="add to favorites">
-                            <FavoriteIcon />
-                        </IconButton>
-                        <IconButton aria-label="share">
-                            <ShareIcon />
-                        </IconButton>
-                        <IconButton
-                            className={clsx(classes.expand, {
-                                [classes.expandOpen]: expanded,
-                            })}
-                            onClick={handleExpandClick}
-                            aria-expanded={expanded}
-                            aria-label="show more"
-                        >
-                            <ExpandMoreIcon />
-                        </IconButton>
-                    </CardActions>
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <TravelDetail />
                     </Collapse>

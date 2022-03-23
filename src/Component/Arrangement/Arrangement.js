@@ -144,7 +144,7 @@ export default function Arrangement() {
 
                         </ListItem>
                         <Collapse in={detailOpen.indexOf(i.id) > -1} timeout="auto" unmountOnExit>
-                            <ArrangementDetail />
+                            <ArrangementDetail id={i.id} />
                         </Collapse>
                     </div>
 

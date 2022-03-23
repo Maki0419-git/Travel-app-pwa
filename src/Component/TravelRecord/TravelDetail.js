@@ -43,22 +43,6 @@ function getSteps() {
     return ['Select campaign settings', 'Create an ad group', 'Create an ad'];
 }
 
-// function getStepContent(step) {
-
-//     switch (step) {
-//         case 0:
-//             return <Box borderRadius={16} className={classes.box} />
-//         case 1:
-//             return 'An ad group contains one or more ads which target a shared set of keywords.';
-//         case 2:
-//             return `Try out different ad text to see what brings in the most customers,
-//               and learn how to enhance your ads using features like ad extensions.
-//               If you run into any problems with your ads, find out how to tell if
-//               they're running and how to resolve approval issues.`;
-//         default:
-//             return 'Unknown step';
-//     }
-// }
 
 export default function TravelDetail() {
     const classes = useStyles();
@@ -86,7 +70,7 @@ export default function TravelDetail() {
                 {steps.map((label, index) => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
-                        <StepContent style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <StepContent style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid" }}>
                             <GetStepContent />
 
                             <div className={classes.actionsContainer}>

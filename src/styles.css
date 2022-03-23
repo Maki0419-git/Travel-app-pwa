@@ -10,6 +10,24 @@
     font-family: 'Noto Serif TC', serif;
     /* font-size: larger; */
   }
+
+  .float-arrow{
+    color:white;
+    transform: rotate(0.25turn);
+    animation: movedown 2s infinite;
+    font-weight: bold;
+    font-size:40px
+  }
+
+  @keyframes movedown {
+    0%{
+      transform: translateY(0px) translateX(0px) rotate(0.25turn);
+    }100%{
+      transform:translateY(50px) translateX(0px)  rotate(0.25turn)
+    }
+    
+  }
+
   .vl {
     border-left: 6px solid #9a0036;
     height:40px;

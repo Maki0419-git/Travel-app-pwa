@@ -10,7 +10,7 @@ const defaultProps = {
     borderColor: 'primary.main',
     m: 1,
     border: 1,
-    style: { width: '8rem', height: '8rem' },
+    // style: { width: '8rem', height: '8rem' },
 };
 
 const GetStepContent = () => {
@@ -74,7 +74,7 @@ const GetStepContent = () => {
     return (
         <Box borderRadius={16} {...defaultProps} style={{
             flex: 1, display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center", padding: 15
+            pt: 50, pb: 50, pl: 100, pr: 100
         }}>
             <input type="file" accept="image/x-png,image/jpeg" onChange={handleUpload}
                 id="file"

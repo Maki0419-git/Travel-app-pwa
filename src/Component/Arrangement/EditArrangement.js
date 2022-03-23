@@ -16,7 +16,7 @@ import AddIcon from '@material-ui/icons/Add';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { DatePicker } from "./DateSelection"
 import dayjs from 'dayjs';
-import { getSpots, addSpots, deleteSpots, getArrangements, addArrangement } from '../../utils/firebaseFunc';
+import { getSpots, addSpots, deleteSpots, addArrangement } from '../../utils/firebaseFunc';
 import Fields from "./Fields";
 
 
