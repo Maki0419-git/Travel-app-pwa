@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useMediaQuery } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import ImageList from '@material-ui/core/ImageList';
@@ -16,9 +17,8 @@ import TextField from '@material-ui/core/TextField';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import Box from '@material-ui/core/Box';
-import firebase from "firebase/app";
-import "firebase/storage";
-
+import { useTheme } from "@material-ui/core/styles";
+import { getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 import { storage } from '../../Config/firebase.js';
 import "../../styles.css";
 
@@ -38,31 +38,24 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(2),
         flex: 1,
     },
+    topBar: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
     result: {
-
         width: "100%",
         display: "flex",
-
         alignItems: "center",
         justifyContent: "left"
     },
     root: {
-        display: 'flex',
-        padding: 10,
-        flexDirection: "column",
-        // flexWrap: 'wrap',
-        // justifyContent: 'space-around',
-        // alignItems: "center",
-
+        padding: 15,
         backgroundColor: theme.palette.background.paper,
     },
     imageList: {
-        margin: 10,
-        padding: 5,
-        width: "100%",
-        height: "100%",
+        margin: 15,
     },
-
     field: {
         margin: 20
     },
@@ -84,6 +77,9 @@ const useStyles = makeStyles((theme) => ({
     },
     center: {
         margin: "auto"
+    },
+    button: {
+        margin: 15,
     }
 }));
 
@@ -91,9 +87,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, editPhoto, handleUpload }) {
+export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, editPhoto, handleUpload, setImageUpload, setImagePrev }) {
     const classes = useStyles();
-
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     async function waitEach(array, callback) {
         for (let i = 0; i < array.length; i++) {
             await callback(i, array[i]); //等它!
@@ -101,31 +98,18 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
     }
 
     const handleSubmit = () => {
-
-
         if (imageUpload) {
-
             waitEach(imageUpload, async (index, item) => {
+                const storage = getStorage();
                 try {
-                    console.log(item);
-                    const imageRef = storage.ref().child("ABC/" + item.name);
-
-                    await imageRef.put(item);
-
-                    alert("上傳成功");
-
-                    const url = await imageRef.getDownloadURL();
-
-                    console.log(url);
+                    const storageRef = ref(storage, '/username/' + index)
+                    await uploadBytes(storageRef, item);
+                    handleClose();
 
                 }
-
                 catch (e) {
-
                     if (e.code === "storage/unauthorized") {
-
                         alert("尚未登入");
-
                     } else { console.log(e.message); }
                 }
             })
@@ -134,9 +118,7 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
     return (
 
 
-        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}
-            style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", }}
-        >
+        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -150,24 +132,14 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                 </Toolbar>
             </AppBar>
             <div className={classes.root}>
-                <Box display="flex"  >
-                    <Box p={1} flexGrow={1} className={classes.center}>
-                        <span className="font-link" style={{
-                            fontSize: 17,
-                        }} >
-                            共 {imagePrev.length} 張
-                        </span>
-                    </Box>
-
-                    <Box  >
+                <Box className={classes.topBar}  >
+                    <span className="font-link" style={{ fontSize: 17, }} >
+                        共 {imagePrev.length} 張
+                    </span>
+                    <Box >
                         <input type="file" accept="image/x-png,image/jpeg" onChange={handleUpload}
                             id="file"
-                            style={{
-                                display: "none"
-                                // visibility: "hidden",
-                                // width: 0,
-                                // height: 0
-                            }}
+                            style={{ display: "none" }}
                             multiple
                             capture
                         />
@@ -179,14 +151,12 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                     </Box>
                 </Box>
 
-                <ImageList rowHeight={180} className={classes.imageList} >
-
+                <ImageList cols={3} rowHeight={300} className={classes.imageList} >
                     {imagePrev.map((photo, index) => (
-                        <ImageListItem key={photo.imgPath} >
 
-                            <img src={photo.imgPath} height="150" />
+                        <ImageListItem key={index} cols={isMobile ? 3 : 1}>
+                            <img src={photo} />
                             <ImageListItemBar
-
                                 position="top"
                                 actionIcon={
                                     <IconButton className={classes.icon} onClick={() => editPhoto(index)}>
@@ -196,39 +166,21 @@ export default function PrevDialog({ open, handleClose, imagePrev, imageUpload, 
                                 actionPosition="right"
                                 className={classes.titleBar}
                             />
-
                         </ImageListItem>
+
                     ))}
 
                 </ImageList>
             </div>
-            <div className="field">
-                <TextField
-                    id="outlined-multiline-static"
-                    label="留言"
-                    multiline
-                    rows={4}
-                    defaultValue="留個言吧!"
-                    variant="outlined"
-                    style={{ width: "90%", marginTop: 20, padding: 15 }}
-                />
-            </div>
-            <Box display="flex" flexDirection="row-reverse" p={1} m={1} >
-                {console.log(imageUpload)}
-                <Box p={1} >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.button}
-                        width="90%"
-                        startIcon={<CloudUploadIcon />}
-                        onClick={handleSubmit}
-                    >
-                        UPLOAD
-                    </Button>
-                </Box>
-
-            </Box>
+            <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                startIcon={<CloudUploadIcon />}
+                onClick={handleSubmit}
+            >
+                UPLOAD
+            </Button>
 
         </Dialog>
 
