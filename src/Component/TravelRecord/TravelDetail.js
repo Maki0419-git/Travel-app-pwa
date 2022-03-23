@@ -11,13 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import GetStepContent from "./StepContent";
 import "../../styles.css";
 
-const defaultProps = {
-    bgcolor: 'background.paper',
-    borderColor: 'primary.main',
-    m: 1,
-    border: 1,
-    style: { width: '8rem', height: '8rem' },
-};
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -70,9 +64,8 @@ export default function TravelDetail() {
                 {steps.map((label, index) => (
                     <Step key={label}>
                         <StepLabel>{label}</StepLabel>
-                        <StepContent style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid" }}>
+                        <StepContent>
                             <GetStepContent />
-
                             <div className={classes.actionsContainer}>
                                 <div>
                                     <Button

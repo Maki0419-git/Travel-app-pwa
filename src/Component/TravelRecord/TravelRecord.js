@@ -28,7 +28,14 @@ const useStyles = makeStyles((theme) => ({
 
     },
     root: {
-        margin: 20,
+        margin: 100,
+        marginTop: 20,
+        [theme.breakpoints.down('md')]: {
+            margin: 80,
+        },
+        [theme.breakpoints.down('sm')]: {
+            margin: 20,
+        },
     },
     media: {
         paddingTop: '56.25%', // 16:9
@@ -46,9 +53,21 @@ const useStyles = makeStyles((theme) => ({
     },
     mediaTitle: {
         color: 'white',
+        [theme.breakpoints.down('md')]: {
+            fontSize: 25
+        },
+        [theme.breakpoints.down('sm')]: {
+            fontSize: 20
+        },
     },
     mediaDate: {
         color: 'white',
+        [theme.breakpoints.down('md')]: {
+            fontSize: 15
+        },
+        [theme.breakpoints.down('sm')]: {
+            fontSize: 10
+        },
         marginLeft: 4
     },
     mediaMore: {
@@ -105,12 +124,19 @@ export default function TravelRecord() {
                             <ArrowRightAltIcon className="float-arrow" fontSize="large" style={{ fontSize: 50 }} />
                         </CardContent>
                     </CardMedia>
-                    <CardContent>
-                        <Typography variant="body2" color="textSecondary" component="p">
-                            This impressive paella is a perfect party dish and a fun meal to cook together with your
-                            guests. Add 1 cup of frozen peas along with the mussels, if you like.
-                        </Typography>
-                    </CardContent>
+                    <CardActions disableSpacing>
+
+                        <IconButton
+                            className={clsx(classes.expand, {
+                                [classes.expandOpen]: expanded,
+                            })}
+                            onClick={handleExpandClick}
+                            aria-expanded={expanded}
+                            aria-label="show more"
+                        >
+                            <ExpandMoreIcon />
+                        </IconButton>
+                    </CardActions>
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <TravelDetail />
                     </Collapse>
