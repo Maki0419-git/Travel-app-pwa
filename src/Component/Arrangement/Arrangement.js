@@ -11,10 +11,11 @@ import Divider from '@material-ui/core/Divider';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Collapse from '@material-ui/core/Collapse';
-
+import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
+import Tooltip from '@material-ui/core/Tooltip';
 import EditArrangement from './EditArrangement';
 import ArrangementDetail from "./ArrangementDetail";
-import { getArrangements } from '../../utils/firebaseFunc';
+import { getArrangements, updateTravel } from '../../utils/firebaseFunc';
 import NavBar from "../NavBar";
 import "../../styles.css";
 
@@ -111,6 +112,12 @@ export default function Arrangement() {
             setDetailOpen([...detailOpen, id])
         }
     }
+
+    const updateTravelStatus = async (id) => {
+        try {
+            await updateTravel("DlXAEufxhTCF0L2SvK39", id, { progress: "finish" })
+        } catch (e) { console.log(e) }
+    }
     useEffect(() => { readData() }, [])
 
 
@@ -137,9 +144,16 @@ export default function Arrangement() {
 
                             </Grid>
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" aria-label="delete" onClick={() => { openAdd("edit"); setMain({ title: i.title, day: i.day }); setSelectedID(i.id) }} >
-                                    <EditIcon />
-                                </IconButton>
+                                <Tooltip title="結束旅程" placement="top">
+                                    <IconButton edge="end" aria-label="finish" onClick={() => updateTravelStatus(i.id)} color="primary">
+                                        <DoneOutlineIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="編輯行程" placement="top">
+                                    <IconButton edge="end" aria-label="edit" onClick={() => { openAdd("edit"); setMain({ title: i.title, day: i.day }); setSelectedID(i.id) }} >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
                             </ListItemSecondaryAction>
 
                         </ListItem>
@@ -148,9 +162,10 @@ export default function Arrangement() {
                         </Collapse>
                     </div>
 
-                ))}
+                ))
+                }
 
-            </List>
+            </List >
 
             <EditArrangement open={open} handleClose={handleClose} id={selectedID} action={action} main={main} />
             {/* <ArrangementDetail open={detailOpen} main={main} selectedID={selectedID} closeDetail={closeDetail} /> */}

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from '../Config/firebase';
 
 
@@ -17,6 +17,23 @@ const getArrangements = (userID, setArrangements) => {
             );
         });
         setArrangements(data);
+    });
+}
+
+const getTravelRecord = async (userID, setRecords) => {
+    const q = query(collection(db, `user_info/${userID}/travels`), where("progress", "==", "finish"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+            data.push(
+                {
+                    id: doc.id,
+                    title: doc.data().title,
+                    day: dayjs(doc.data().day),
+                }
+            );
+        });
+        setRecords(data);
     });
 }
 
@@ -67,4 +84,9 @@ const deleteSpots = async (userID, travelID) => {
     await Promise.all(promiseArray);
 }
 
-export { getSpots, addSpots, deleteSpots, getArrangements, addArrangement }
+const updateTravel = async (userID, travelID, data) => {
+    const docRef = doc(db, `user_info/${userID}/travels/${travelID}`);
+    await updateDoc(docRef, data);
+}
+
+export { getSpots, addSpots, deleteSpots, getArrangements, addArrangement, updateTravel, getTravelRecord }

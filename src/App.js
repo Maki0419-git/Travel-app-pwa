@@ -15,7 +15,21 @@ const theme = createTheme({
     secondary: {
       main: "#e33371"
     }
-  }
+  },
+  typography: {
+    fontFamily: [
+      'Noto Serif TC',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+  },
 });
 
 function NoPage() {
