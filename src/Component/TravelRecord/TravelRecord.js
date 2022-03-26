@@ -1,8 +1,9 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TravelCard from './TravelCard';
 import NavBar from "../NavBar";
 import '../../styles.css';
+import { getTravelRecord } from '../../utils/firebaseFunc';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -16,13 +17,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function TravelRecord() {
+    const [records, setRecords] = useState([]);
     const classes = useStyles();
+    useEffect(() => {
+        getTravelRecord("DlXAEufxhTCF0L2SvK39", setRecords)
+    }, [])
     return (
         <div className={classes.container}>
             <NavBar />
             <div>
-                {new Array(2).fill(0).map((i, index) =>
-                    <TravelCard index={index} />
+                {records.map((record, index) =>
+                    <TravelCard index={index} record={record} />
                 )}
             </div>
 

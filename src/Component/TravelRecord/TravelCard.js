@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TravelDetail from "./TravelDetail";
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
@@ -16,9 +16,12 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-
-
-
+import TextField from '@material-ui/core/TextField';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+import Button from '@material-ui/core/Button';
+import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+import { updateTravel, uploadToStorage } from '../../utils/firebaseFunc';
 
 const useStyles = makeStyles((theme) => ({
 
@@ -71,6 +74,12 @@ const useStyles = makeStyles((theme) => ({
         right: 2,
         color: 'white',
     },
+    memory: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: 24,
+        alignItems: 'flex-start'
+    },
     expand: {
         transform: 'rotate(0deg)',
         marginLeft: 'auto',
@@ -86,10 +95,42 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function changeDay(d) {
+    switch (d) {
+        case "0":
+            return "日"
 
-const TravelCard = ({ index }) => {
-    const [expanded, setExpanded] = React.useState(false);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+        case "1":
+            return "一"
+
+        case "2":
+            return "二"
+
+        case "3":
+            return "三"
+
+        case "4":
+            return "四"
+
+        case "5":
+            return "五"
+
+        case "6":
+            return "六"
+
+        default:
+
+            return "一"
+
+    }
+}
+
+const TravelCard = ({ index, record }) => {
+    const [expanded, setExpanded] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [memory, setMemory] = useState("");
+    const [edit, setEdit] = useState(false);
+    const inputRef = useRef(null);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -101,7 +142,33 @@ const TravelCard = ({ index }) => {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+    const saveToDB = async () => {
+        try {
+            await updateTravel("DlXAEufxhTCF0L2SvK39", record.id, { memory });
+            setEdit(false);
+        } catch (e) {
+            console.log(e)
+            alert('Error updating travel record')
+        }
+    }
+
+    const changeCover = async (e) => {
+        console.log(e.target.files)
+        if (e.target.files && e.target.files.length > 0) {
+            try {
+                await uploadToStorage("travel_cover", record.id, Object.values(e.target.files));
+                handleClose();
+            } catch (e) {
+                alert(e);
+                console.log(e)
+            }
+        }
+    }
+
     const classes = useStyles({ index });
+    useEffect(() => {
+        setMemory(record.memory)
+    }, [record])
     return (
         <Card className={classes.root}>
             <CardMedia
@@ -117,23 +184,37 @@ const TravelCard = ({ index }) => {
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
                 >
-                    <MenuItem onClick={handleClose}>編輯首圖</MenuItem>
+                    <MenuItem onClick={() => inputRef.current.click()}>編輯首圖</MenuItem>
+                    <input type="file" accept="image/x-png,image/jpeg" ref={inputRef}
+                        onChange={(e) => changeCover(e)}
+                        id="file"
+                        style={{ display: "none" }}
+                    />
                     <MenuItem onClick={handleClose}>刪除此旅遊紀錄</MenuItem>
                 </Menu>
                 <CardContent className={classes.mediaTextContainer}>
                     <Box>
                         <Typography variant="h2" component="p" className={classes.mediaTitle}>
-                            Shrimp and Chorizo
+                            {record.title}
                         </Typography>
                         <Typography variant="h6" component="p" className={classes.mediaDate}>
-                            September 14, 2016
+                            {record.day.format("YYYY 年 M 月 D 日 ") + `(${changeDay(record.day.format("d"))})`}
                         </Typography>
                     </Box>
                     <ArrowRightAltIcon className="float-arrow" fontSize="large" style={{ fontSize: 50 }} />
                 </CardContent>
             </CardMedia>
+            <CardContent className={classes.memory}>
+                {edit ?
+                    <TextField id="standard-basic" label="留下你獨一無二的回憶!" multiline fullWidth value={memory} onChange={(e) => setMemory(e.target.value)} /> :
+                    <Typography variant="body1" component="p" color="textSecondary">{memory ? memory : "留下你獨一無二的回憶!"}</Typography>}
+                <Box style={{ display: 'flex', alignItems: 'center' }}>
+                    {edit && <SaveIcon fontSize="small" style={{ margin: 2, cursor: "pointer" }} onClick={saveToDB} />}
+                    <EditIcon fontSize="small" style={{ margin: 2, cursor: "pointer" }} onClick={() => setEdit(true)} />
+                </Box>
+            </CardContent>
             <CardActions disableSpacing>
-
+                <Button color="primary" startIcon={<PhotoLibraryIcon />} style={{ paddingLeft: 24 }}>更多旅遊照片</Button>
                 <IconButton
                     className={clsx(classes.expand, {
                         [classes.expandOpen]: expanded,

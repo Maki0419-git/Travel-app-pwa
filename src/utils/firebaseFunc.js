@@ -1,8 +1,11 @@
 import dayjs from 'dayjs';
 import { collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from '../Config/firebase';
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 
+
+//firestore
 const getArrangements = (userID, setArrangements) => {
     const q = query(collection(db, `user_info/${userID}/travels`), where("progress", "==", "arrangement"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -28,7 +31,7 @@ const getTravelRecord = async (userID, setRecords) => {
             data.push(
                 {
                     id: doc.id,
-                    title: doc.data().title,
+                    ...doc.data(),
                     day: dayjs(doc.data().day),
                 }
             );
@@ -89,4 +92,18 @@ const updateTravel = async (userID, travelID, data) => {
     await updateDoc(docRef, data);
 }
 
-export { getSpots, addSpots, deleteSpots, getArrangements, addArrangement, updateTravel, getTravelRecord }
+//firestorage
+const uploadToStorage = async (folder, targetID, files) => {
+    const storage = getStorage();
+    let promiseArray = [];
+    files.forEach(file => {
+        const metadata = {
+            contentType: file.type,
+        };
+        const fileRef = ref(storage, `${folder}/${targetID}/${file.name}`);
+        promiseArray.push(uploadBytes(fileRef, file, metadata));
+    })
+    await Promise.all(promiseArray);
+}
+
+export { getSpots, addSpots, deleteSpots, getArrangements, addArrangement, updateTravel, getTravelRecord, uploadToStorage }
